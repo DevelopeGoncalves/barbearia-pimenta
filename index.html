@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pimenta Barber 🌶️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce { animation: bounce 1s infinite; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .bg-pimenta {
+            background: linear-gradient(135deg, #000000 0%, #1a0000 100%);
+        }
+        
+        .text-pimenta {
+            background: linear-gradient(135deg, #ff0000 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <div id="app"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const BarbeariaPimenta = () => {
+            const [activeTab, setActiveTab] = useState('home');
+            const [menuOpen, setMenuOpen] = useState(false);
+            const [servicos] = useState([
+                { id: 1, nome: 'Corte Masculino', preco: 35, duracao: '30 min', icon: '✂️' },
+                { id: 2, nome: 'Barba', preco: 25, duracao: '20 min', icon: '🪒' },
+                { id: 3, nome: 'Corte + Barba', preco: 55, duracao: '45 min', icon: '💈' },
+                { id: 4, nome: 'Pintura de Cabelo', preco: 80, duracao: '60 min', icon: '🎨' },
+                { id: 5, nome: 'Pintura de Barba', preco: 40, duracao: '30 min', icon: '✨' },
+                { id: 6, nome: 'Sobrancelha', preco: 15, duracao: '15 min', icon: '👁️' },
+                { id: 7, nome: 'Platinado', preco: 150, duracao: '90 min', icon: '⭐' },
+            ]);
+
+            const [produtos] = useState([
+                { id: 1, nome: 'Camisa Flamengo', preco: 89.90, categoria: 'camisa', img: '🔴⚫' },
+                { id: 2, nome: 'Camisa Palmeiras', preco: 89.90, categoria: 'camisa', img: '🟢⚪' },
+                { id: 3, nome: 'Camisa Corinthians', preco: 89.90, categoria: 'camisa', img: '⚫⚪' },
+                { id: 4, nome: 'Perfume Black Mamba', preco: 120, categoria: 'perfume', img: '🖤' },
+                { id: 5, nome: 'Perfume Ocean Blue', preco: 110, categoria: 'perfume', img: '💙' },
+                { id: 6, nome: 'Creme para Barbear Premium', preco: 45, categoria: 'creme', img: '🧴' },
+                { id: 7, nome: 'Pomada Modeladora', preco: 35, categoria: 'creme', img: '💈' },
+                { id: 8, nome: 'Óleo para Barba', preco: 50, categoria: 'creme', img: '🧴' },
+            ]);
+
+            const [agendamentos, setAgendamentos] = useState([
+                { data: '2025-11-06', horarios: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'] },
+                { data: '2025-11-07', horarios: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'] },
+                { data: '2025-11-08', horarios: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'] },
+            ]);
+
+            const [carrinho, setCarrinho] = useState([]);
+            const [agendamentoForm, setAgendamentoForm] = useState({
+                nome: '', telefone: '', servico: '', data: '', horario: ''
+            });
+            const [mensagemSucesso, setMensagemSucesso] = useState('');
+
+            const adicionarAoCarrinho = (produto) => {
+                setCarrinho([...carrinho, produto]);
+                setMensagemSucesso('🔥 Produto adicionado ao carrinho!');
+                setTimeout(() => setMensagemSucesso(''), 3000);
+            };
+
+            const removerDoCarrinho = (index) => {
+                const novoCarrinho = carrinho.filter((_, i) => i !== index);
+                setCarrinho(novoCarrinho);
+            };
+
+            const calcularTotal = () => {
+                return carrinho.reduce((total, item) => total + item.preco, 0).toFixed(2);
+            };
+
+            const realizarAgendamento = () => {
+                if (agendamentoForm.nome && agendamentoForm.telefone && agendamentoForm.servico && agendamentoForm.data && agendamentoForm.horario) {
+                    const novoAgendamento = agendamentos.map(dia => {
+                        if (dia.data === agendamentoForm.data) {
+                            return {
+                                ...dia,
+                                horarios: dia.horarios.filter(h => h !== agendamentoForm.horario)
+                            };
+                        }
+                        return dia;
+                    });
+                    setAgendamentos(novoAgendamento);
+                    setMensagemSucesso('🔥 Agendamento realizado! Te esperamos na Pimenta Barber! 🌶️');
+                    setAgendamentoForm({ nome: '', telefone: '', servico: '', data: '', horario: '' });
+                    setTimeout(() => {
+                        setMensagemSucesso('');
+                        setActiveTab('home');
+                    }, 3000);
+                } else {
+                    setMensagemSucesso('⚠️ Preencha todos os campos!');
+                    setTimeout(() => setMensagemSucesso(''), 3000);
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-black">
+                    {/* NavBar */}
+                    <nav className="bg-pimenta text-white p-4 sticky top-0 z-50 shadow-2xl border-b-2 border-red-600">
+                        <div className="flex justify-between items-center max-w-6xl mx-auto">
+                            <h1 className="text-2xl font-bold tracking-wider" style={{letterSpacing: '2px'}}>
+                                <span className="text-white">PIMENTA</span>{' '}
+                                <span className="text-red-500">BARBER</span> 🌶️
+                            </h1>
+                            <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-3xl">
+                                {menuOpen ? '✕' : '☰'}
+                            </button>
+                        </div>
+                        {menuOpen && (
+                            <div className="mt-4 space-y-2 md:hidden">
+                                {['home', 'servicos', 'produtos', 'agendar'].map(tab => (
+                                    <button
+                                        key={tab}
+                                        onClick={() => { setActiveTab(tab); setMenuOpen(false); }}
+                                        className="block w-full text-left p-3 hover:bg-red-900 rounded-lg capitalize font-bold transition"
+                                    >
+                                        {tab === 'home' ? '🏠 Início' : tab === 'servicos' ? '💈 Serviços' : tab === 'produtos' ? '🛍️ Loja' : '📅 Agendar'}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </nav>
+
+                    {/* Mensagem de Sucesso */}
+                    {mensagemSucesso && (
+                        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-red-600 to-red-800 text-white px-6 py-3 rounded-lg shadow-2xl z-50 animate-bounce font-bold">
+                            {mensagemSucesso}
+                        </div>
+                    )}
+
+                    {/* Conteúdo */}
+                    <div className="pb-20">
+                        {activeTab === 'home' && (
+                            <div className="min-h-screen bg-black">
+                                <div className="bg-pimenta text-white p-12 text-center relative overflow-hidden">
+                                    <div className="absolute inset-0 opacity-10">
+                                        <div className="text-9xl">🌶️</div>
+                                    </div>
+                                    <div className="relative z-10">
+                                        <div className="text-8xl mb-6 animate-bounce">🌶️</div>
+                                        <h2 className="text-5xl font-bold mb-4 tracking-wider" style={{letterSpacing: '3px'}}>
+                                            PIMENTA BARBER
+                                        </h2>
+                                        <p className="text-2xl mb-8 text-red-400 font-bold">
+                                            ESTILO • ATITUDE • PIMENTA 🔥
+                                        </p>
+                                        <button
+                                            onClick={() => setActiveTab('agendar')}
+                                            className="bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-full font-bold text-xl transition transform hover:scale-105 shadow-2xl border-2 border-red-400"
+                                        >
+                                            🔥 AGENDAR AGORA
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 max-w-6xl mx-auto">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                                        <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl text-center border-2 border-red-600 hover:border-red-400 transition transform hover:scale-105">
+                                            <div className="text-5xl mb-4">✂️</div>
+                                            <h3 className="font-bold text-2xl mb-3 text-white">CORTES MODERNOS</h3>
+                                            <p className="text-gray-400 text-lg">Diversos estilos e técnicas profissionais</p>
+                                        </div>
+                                        <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl text-center border-2 border-red-600 hover:border-red-400 transition transform hover:scale-105">
+                                            <div className="text-5xl mb-4">📱</div>
+                                            <h3 className="font-bold text-2xl mb-3 text-white">AGENDAMENTO ONLINE</h3>
+                                            <p className="text-gray-400 text-lg">Marque seu horário direto pelo site</p>
+                                        </div>
+                                        <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl text-center border-2 border-red-600 hover:border-red-400 transition transform hover:scale-105">
+                                            <div className="text-5xl mb-4">🛍️</div>
+                                            <h3 className="font-bold text-2xl mb-3 text-white">PRODUTOS PREMIUM</h3>
+                                            <p className="text-gray-400 text-lg">Camisas, perfumes e cosméticos</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-red-900 to-black text-white p-8 rounded-2xl shadow-2xl border-2 border-red-600">
+                                        <h3 className="text-3xl font-bold mb-6 text-center tracking-wider">📍 CONTATO & LOCALIZAÇÃO</h3>
+                                        <div className="space-y-4 text-lg">
+                                            <p className="flex items-center gap-3 justify-center md:justify-start">
+                                                <span className="text-2xl">📞</span> 
+                                                <span className="font-bold">(27) 99999-9999</span>
+                                            </p>
+                                            <p className="flex items-center gap-3 justify-center md:justify-start">
+                                                <span className="text-2xl">✉️</span> 
+                                                <span className="font-bold">contato@pimentabarber.com.br</span>
+                                            </p>
+                                            <p className="flex items-center gap-3 justify-center md:justify-start">
+                                                <span className="text-2xl">⏰</span> 
+                                                <span className="font-bold">Seg-Sex: 9h-20h | Sáb: 9h-18h</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'servicos' && (
+                            <div className="p-6 max-w-6xl mx-auto">
+                                <h2 className="text-4xl font-bold text-center mb-12 text-white tracking-wider">
+                                    💈 NOSSOS SERVIÇOS
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {servicos.map(servico => (
+                                        <div key={servico.id} className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl border-2 border-red-600 hover:border-red-400 transition transform hover:scale-105">
+                                            <div className="flex items-center gap-4 mb-4">
+                                                <span className="text-5xl">{servico.icon}</span>
+                                                <div className="flex-1">
+                                                    <h3 className="text-2xl font-bold text-white mb-1">{servico.nome}</h3>
+                                                    <p className="text-gray-400 flex items-center gap-2 text-lg">
+                                                        ⏱️ {servico.duracao}
+                                                    </p>
+                                                </div>
+                                                <span className="bg-red-600 text-white px-5 py-3 rounded-full font-bold text-xl shadow-lg">
+                                                    R$ {servico.preco}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'produtos' && (
+                            <div className="p-6 max-w-6xl mx-auto">
+                                <h2 className="text-4xl font-bold text-center mb-12 text-white tracking-wider">
+                                    🛍️ NOSSA LOJA
+                                </h2>
+                                
+                                {carrinho.length > 0 && (
+                                    <div className="bg-gradient-to-r from-green-900 to-green-700 border-2 border-green-500 p-6 mb-8 rounded-2xl shadow-2xl">
+                                        <div className="flex justify-between items-center text-white">
+                                            <span className="font-bold text-xl">🛒 Carrinho: {carrinho.length} itens</span>
+                                            <span className="text-3xl font-bold">R$ {calcularTotal()}</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {produtos.map(produto => (
+                                        <div key={produto.id} className="bg-gradient-to-br from-gray-900 to-black p-6 rounded-2xl shadow-2xl hover:shadow-red-600/50 transition border-2 border-gray-800 hover:border-red-600 transform hover:scale-105">
+                                            <div className="text-6xl text-center mb-4">{produto.img}</div>
+                                            <h3 className="text-xl font-bold text-white mb-3 text-center">{produto.nome}</h3>
+                                            <div className="flex justify-between items-center gap-3">
+                                                <span className="text-3xl font-bold text-red-500">R$ {produto.preco.toFixed(2)}</span>
+                                                <button
+                                                    onClick={() => adicionarAoCarrinho(produto)}
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-bold transition transform hover:scale-105 shadow-lg"
+                                                >
+                                                    🛒 Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {carrinho.length > 0 && (
+                                    <div className="mt-12 bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl border-2 border-red-600">
+                                        <h3 className="text-3xl font-bold mb-6 text-white">🛒 CARRINHO DE COMPRAS</h3>
+                                        {carrinho.map((item, index) => (
+                                            <div key={index} className="flex justify-between items-center border-b border-gray-700 py-4 text-white">
+                                                <span className="text-lg">{item.nome}</span>
+                                                <div className="flex items-center gap-6">
+                                                    <span className="font-bold text-xl text-red-500">R$ {item.preco.toFixed(2)}</span>
+                                                    <button
+                                                        onClick={() => removerDoCarrinho(index)}
+                                                        className="text-red-600 hover:text-red-400 text-2xl font-bold transition"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <div className="mt-6 pt-6 border-t-2 border-gray-700">
+                                            <div className="flex justify-between items-center text-2xl font-bold text-white mb-6">
+                                                <span>TOTAL:</span>
+                                                <span className="text-red-500">R$ {calcularTotal()}</span>
+                                            </div>
+                                            <button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl">
+                                                ✓ FINALIZAR COMPRA
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'agendar' && (
+                            <div className="p-6 max-w-3xl mx-auto">
+                                <h2 className="text-4xl font-bold text-center mb-12 text-white tracking-wider">
+                                    📅 AGENDAR HORÁRIO
+                                </h2>
+                                <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl border-2 border-red-600">
+                                    <div className="space-y-6">
+                                        <div>
+                                            <label className="block font-bold mb-3 text-white text-lg">NOME COMPLETO</label>
+                                            <input
+                                                type="text"
+                                                value={agendamentoForm.nome}
+                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, nome: e.target.value})}
+                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                                placeholder="Seu nome"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block font-bold mb-3 text-white text-lg">TELEFONE</label>
+                                            <input
+                                                type="tel"
+                                                value={agendamentoForm.telefone}
+                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, telefone: e.target.value})}
+                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                                placeholder="(00) 00000-0000"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block font-bold mb-3 text-white text-lg">SERVIÇO</label>
+                                            <select
+                                                value={agendamentoForm.servico}
+                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, servico: e.target.value})}
+                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                            >
+                                                <option value="">Selecione um serviço</option>
+                                                {servicos.map(s => (
+                                                    <option key={s.id} value={s.nome}>{s.icon} {s.nome} - R$ {s.preco}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block font-bold mb-3 text-white text-lg">DATA</label>
+                                            <select
+                                                value={agendamentoForm.data}
+                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, data: e.target.value, horario: ''})}
+                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                            >
+                                                <option value="">Selecione uma data</option>
+                                                {agendamentos.map(dia => (
+                                                    <option key={dia.data} value={dia.data}>
+                                                        {new Date(dia.data + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        {agendamentoForm.data && (
+                                            <div>
+                                                <label className="block font-bold mb-4 text-white text-lg">HORÁRIO DISPONÍVEL</label>
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    {agendamentos.find(d => d.data === agendamentoForm.data)?.horarios.map(horario => (
+                                                        <button
+                                                            key={horario}
+                                                            onClick={() => setAgendamentoForm({...agendamentoForm, horario})}
+                                                            className={`p-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${
+                                                                agendamentoForm.horario === horario
+                                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50'
+                                                                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border-2 border-gray-700'
+                                                            }`}
+                                                        >
+                                                            {horario}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            onClick={realizarAgendamento}
+                                            className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl mt-8"
+                                        >
+                                            ✓ CONFIRMAR AGENDAMENTO
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Menu Inferior Mobile */}
+                    <div className="fixed bottom-0 left-0 right-0 bg-black shadow-2xl border-t-2 border-red-600 md:hidden">
+                        <div className="flex justify-around p-2">
+                            {[
+                                { id: 'home', icon: '🏠', label: 'Início' },
+                                { id: 'servicos', icon: '💈', label: 'Serviços' },
+                                { id: 'produtos', icon: '🛍️', label: 'Loja' },
+                                { id: 'agendar', icon: '📅', label: 'Agendar' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex flex-col items-center p-2 rounded-lg transition ${
+                                        activeTab === tab.id ? 'text-red-500 bg-red-900/30' : 'text-gray-400'
+                                    }`}
+                                >
+                                    <span className="text-2xl">{tab.icon}</span>
+                                    <span className="text-xs font-bold mt-1">{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<BarbeariaPimenta />, document.getElementById('app'));
+    </script>
+</body>
+</html>
