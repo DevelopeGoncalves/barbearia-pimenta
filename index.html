@@ -19,7 +19,7 @@
         .fade-in { animation: fadeIn 0.6s ease-out; }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         
         .bg-pimenta {
@@ -33,52 +33,214 @@
             background-clip: text;
         }
     </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
 </head>
 <body class="bg-black">
     <div id="app"></div>
+
+    <script>
+        // Simulação do ID do Usuário (Local Storage Key)
+        const USER_ID_SIMULADO = 'local-pimenta-barber-user';
+        const APPOINTMENTS_KEY = `pimenta_barber_appointments_${USER_ID_SIMULADO}`;
+
+        window.PIMENTA_CONFIG = {
+            barbeiros: [
+                { id: 1, nome: 'Diego', icon: '👨‍🦱', especialidade: 'Cortes Modernos' },
+                { id: 2, nome: 'Junior', icon: '👨‍🦰', especialidade: 'Barbas & Detalhes' },
+                { id: 3, nome: 'João', icon: '👨‍🦲', especialidade: 'Pinturas & Platinados' }
+            ],
+            servicos: [
+                { id: 1, nome: 'Corte Masculino', preco: 35.00, duracao: '30 min', icon: '✂️' },
+                { id: 2, nome: 'Barba', preco: 25.00, duracao: '20 min', icon: '🪒' },
+                { id: 3, nome: 'Corte + Barba', preco: 55.00, duracao: '45 min', icon: '💈' },
+                { id: 4, nome: 'Pintura de Cabelo', preco: 80.00, duracao: '60 min', icon: '🎨' },
+                { id: 5, nome: 'Pintura de Barba', preco: 40.00, duracao: '30 min', icon: '✨' },
+                { id: 6, nome: 'Sobrancelha', preco: 15.00, duracao: '15 min', icon: '👁️' },
+                { id: 7, nome: 'Platinado', preco: 150.00, duracao: '90 min', icon: '⭐' },
+            ],
+            produtos: [
+                { id: 1, nome: 'Camisa Flamengo', preco: 89.90, categoria: 'camisa', img: '🔴⚫' },
+                { id: 2, nome: 'Camisa Palmeiras', preco: 89.90, categoria: 'camisa', img: '🟢⚪' },
+                { id: 3, nome: 'Camisa Corinthians', preco: 89.90, categoria: 'camisa', img: '⚫⚪' },
+                { id: 4, nome: 'Perfume Black Mamba', preco: 120.00, categoria: 'perfume', img: '🖤' },
+                { id: 5, nome: 'Perfume Ocean Blue', preco: 110.00, categoria: 'perfume', img: '💙' },
+                { id: 6, nome: 'Creme para Barbear Premium', preco: 45.00, categoria: 'creme', img: '🧴' },
+                { id: 7, nome: 'Pomada Modeladora', preco: 35.00, categoria: 'creme', img: '💈' },
+                { id: 8, nome: 'Óleo para Barba', preco: 50.00, categoria: 'creme', img: '🧴' },
+            ]
+        };
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect, useCallback } = React;
+
+        const CONFIG_BARBEIROS = window.PIMENTA_CONFIG.barbeiros;
+        const CONFIG_SERVICOS = window.PIMENTA_CONFIG.servicos;
+        const CONFIG_PRODUTOS = window.PIMENTA_CONFIG.produtos;
+
+        // --- FUNÇÕES DE ARMAZENAMENTO LOCAL SIMULANDO FIREBASE ---
+        
+        // 1. Carrega todos os agendamentos salvos (públicos)
+        const loadAllAppointments = () => {
+            const allAppointments = [];
+            // Itera sobre todos os barbeiros e carrega seus agendamentos
+            CONFIG_BARBEIROS.forEach(barbeiro => {
+                const key = `pimenta_barber_appointments_public_${barbeiro.nome}`;
+                try {
+                    const data = localStorage.getItem(key);
+                    if (data) {
+                        allAppointments.push(...JSON.parse(data));
+                    }
+                } catch (e) {
+                    console.error("Erro ao carregar agendamentos públicos de localStorage:", e);
+                }
+            });
+            // Filtra agendamentos passados
+            const todayDate = new Date().toISOString().slice(0, 10);
+            return allAppointments.filter(appt => appt.date >= todayDate);
+        };
+
+        // 2. Carrega agendamentos do usuário (privados)
+        const loadUserAppointments = () => {
+            try {
+                const data = localStorage.getItem(window.APPOINTMENTS_KEY);
+                if (data) {
+                    const appointments = JSON.parse(data);
+                    // Ordena por data e hora (mais recente primeiro)
+                    return appointments.sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+                }
+                return [];
+            } catch (e) {
+                console.error("Erro ao carregar agendamentos do usuário:", e);
+                return [];
+            }
+        };
+
+        // 3. Salva os agendamentos do usuário
+        const saveUserAppointments = (appointments) => {
+            try {
+                localStorage.setItem(window.APPOINTMENTS_KEY, JSON.stringify(appointments));
+            } catch (e) {
+                console.error("Erro ao salvar agendamentos do usuário:", e);
+            }
+        };
+
+        // 4. Adiciona um agendamento público e privado
+        const addAppointmentLocally = (appointmentData) => {
+            // Salva no "público" (por barbeiro, para simular concorrência)
+            const publicKey = `pimenta_barber_appointments_public_${appointmentData.barberName}`;
+            let publicAppointments = [];
+            try {
+                const data = localStorage.getItem(publicKey);
+                if (data) publicAppointments = JSON.parse(data);
+            } catch (e) { /* ignore */ }
+            publicAppointments.push({...appointmentData, id: crypto.randomUUID(), publicId: crypto.randomUUID()});
+            localStorage.setItem(publicKey, JSON.stringify(publicAppointments));
+
+            // Salva no "privado" (do usuário)
+            let userAppointments = loadUserAppointments();
+            const newAppt = {...appointmentData, id: crypto.randomUUID(), publicId: publicAppointments[publicAppointments.length - 1].publicId };
+            userAppointments.unshift(newAppt); // Adiciona no início para aparecer primeiro
+            saveUserAppointments(userAppointments);
+
+            return newAppt;
+        };
+
+        // 5. Remove um agendamento público e privado
+        const removeAppointmentLocally = (appt) => {
+            // Remove do "público"
+            const publicKey = `pimenta_barber_appointments_public_${appt.barberName}`;
+            let publicAppointments = loadAllAppointments().filter(a => a.barberName === appt.barberName);
+            const updatedPublic = publicAppointments.filter(a => a.publicId !== appt.publicId);
+            localStorage.setItem(publicKey, JSON.stringify(updatedPublic));
+
+            // Remove do "privado"
+            let userAppointments = loadUserAppointments();
+            const updatedUser = userAppointments.filter(a => a.id !== appt.id);
+            saveUserAppointments(updatedUser);
+        };
+
+        // -----------------------------------------------------------------
 
         const BarbeariaPimenta = () => {
+            // Simulação de autenticação/carregamento de dados
+            const userId = window.USER_ID_SIMULADO; // ID simulado
+            const isAuthReady = true; // Sempre pronto sem Firebase
+            const [isDataLoading, setIsDataLoading] = useState(true);
+
+            // Estados da Aplicação
             const [activeTab, setActiveTab] = useState('home');
             const [menuOpen, setMenuOpen] = useState(false);
-            const [servicos] = useState([
-                { id: 1, nome: 'Corte Masculino', preco: 35, duracao: '30 min', icon: '✂️' },
-                { id: 2, nome: 'Barba', preco: 25, duracao: '20 min', icon: '🪒' },
-                { id: 3, nome: 'Corte + Barba', preco: 55, duracao: '45 min', icon: '💈' },
-                { id: 4, nome: 'Pintura de Cabelo', preco: 80, duracao: '60 min', icon: '🎨' },
-                { id: 5, nome: 'Pintura de Barba', preco: 40, duracao: '30 min', icon: '✨' },
-                { id: 6, nome: 'Sobrancelha', preco: 15, duracao: '15 min', icon: '👁️' },
-                { id: 7, nome: 'Platinado', preco: 150, duracao: '90 min', icon: '⭐' },
-            ]);
-
-            const [produtos] = useState([
-                { id: 1, nome: 'Camisa Flamengo', preco: 89.90, categoria: 'camisa', img: '🔴⚫' },
-                { id: 2, nome: 'Camisa Palmeiras', preco: 89.90, categoria: 'camisa', img: '🟢⚪' },
-                { id: 3, nome: 'Camisa Corinthians', preco: 89.90, categoria: 'camisa', img: '⚫⚪' },
-                { id: 4, nome: 'Perfume Black Mamba', preco: 120, categoria: 'perfume', img: '🖤' },
-                { id: 5, nome: 'Perfume Ocean Blue', preco: 110, categoria: 'perfume', img: '💙' },
-                { id: 6, nome: 'Creme para Barbear Premium', preco: 45, categoria: 'creme', img: '🧴' },
-                { id: 7, nome: 'Pomada Modeladora', preco: 35, categoria: 'creme', img: '💈' },
-                { id: 8, nome: 'Óleo para Barba', preco: 50, categoria: 'creme', img: '🧴' },
-            ]);
-
-            const [agendamentos, setAgendamentos] = useState([
-                { data: '2025-11-06', horarios: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'] },
-                { data: '2025-11-07', horarios: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'] },
-                { data: '2025-11-08', horarios: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'] },
-            ]);
+            const [agendamentos, setAgendamentos] = useState([]); // Todos os agendamentos públicos (para ver disponibilidade)
+            const [myAppointments, setMyAppointments] = useState([]); // Agendamentos do usuário logado
+            
+            const [barbeiros] = useState(CONFIG_BARBEIROS);
+            const [servicos] = useState(CONFIG_SERVICOS);
+            const [produtos] = useState(CONFIG_PRODUTOS);
 
             const [carrinho, setCarrinho] = useState([]);
             const [agendamentoForm, setAgendamentoForm] = useState({
-                nome: '', telefone: '', servico: '', data: '', horario: ''
+                nome: '', telefone: '', servico: '', barbeiro: '', data: '', horario: ''
             });
             const [mensagemSucesso, setMensagemSucesso] = useState('');
+
+            const ALL_SLOTS = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+            
+            const generateFutureDates = () => {
+                const dates = [];
+                const today = new Date();
+                today.setDate(today.getDate() + 1);
+
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() + i);
+                    
+                    const yyyy = date.getFullYear();
+                    const mm = String(date.getMonth() + 1).padStart(2, '0');
+                    const dd = String(date.getDate()).padStart(2, '0');
+                    dates.push(`${yyyy}-${mm}-${dd}`);
+                }
+                return dates;
+            };
+            const futureDates = generateFutureDates();
+
+            // Simula o carregamento inicial de dados (Firestore)
+            useEffect(() => {
+                if (isAuthReady) {
+                    // Carrega dados públicos e privados do localStorage
+                    const publicAppointments = loadAllAppointments();
+                    const userAppointments = loadUserAppointments();
+                    setAgendamentos(publicAppointments);
+                    setMyAppointments(userAppointments);
+                    setIsDataLoading(false);
+                    console.log("Dados carregados do LocalStorage (Simulação de Firestore).");
+                }
+            }, [isAuthReady]);
+
+
+            const getAvailableSlots = useCallback((date, barberName) => {
+                if (!barberName) return ALL_SLOTS;
+                
+                const bookedTimes = agendamentos
+                    .filter(appt => appt.date === date && appt.barberName === barberName)
+                    .map(appt => appt.time);
+                
+                return ALL_SLOTS.filter(slot => !bookedTimes.includes(slot));
+            }, [agendamentos]);
 
             const adicionarAoCarrinho = (produto) => {
                 setCarrinho([...carrinho, produto]);
@@ -95,33 +257,169 @@
                 return carrinho.reduce((total, item) => total + item.preco, 0).toFixed(2);
             };
 
-            const realizarAgendamento = () => {
-                if (agendamentoForm.nome && agendamentoForm.telefone && agendamentoForm.servico && agendamentoForm.data && agendamentoForm.horario) {
-                    const novoAgendamento = agendamentos.map(dia => {
-                        if (dia.data === agendamentoForm.data) {
-                            return {
-                                ...dia,
-                                horarios: dia.horarios.filter(h => h !== agendamentoForm.horario)
-                            };
-                        }
-                        return dia;
+            const realizarAgendamento = async () => {
+                if (!agendamentoForm.nome || !agendamentoForm.telefone || !agendamentoForm.servico || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario) {
+                    setMensagemSucesso('⚠️ Preencha todos os campos!');
+                    setTimeout(() => setMensagemSucesso(''), 3000);
+                    return;
+                }
+                
+                const availableSlots = getAvailableSlots(agendamentoForm.data, agendamentoForm.barbeiro);
+                if (!availableSlots.includes(agendamentoForm.horario)) {
+                    setMensagemSucesso('⚠️ Ops! Este horário acabou de ser agendado por outra pessoa. Por favor, escolha outro.');
+                    setTimeout(() => setMensagemSucesso(''), 4000);
+                    return;
+                }
+
+                const appointmentData = {
+                    clientName: agendamentoForm.nome,
+                    clientPhone: agendamentoForm.telefone,
+                    serviceName: servicos.find(s => s.nome === agendamentoForm.servico)?.nome || agendamentoForm.servico,
+                    barberName: agendamentoForm.barbeiro,
+                    date: agendamentoForm.data,
+                    time: agendamentoForm.horario,
+                    timestamp: new Date().toISOString(),
+                    userId: userId,
+                };
+
+                try {
+                    // Simula a adição no "Banco de Dados" (localStorage)
+                    const newAppt = addAppointmentLocally(appointmentData);
+                    
+                    // Atualiza o estado da aplicação
+                    const updatedPublic = [...agendamentos, newAppt].filter(appt => {
+                        const todayDate = new Date().toISOString().slice(0, 10);
+                        return appt.date >= todayDate;
                     });
-                    setAgendamentos(novoAgendamento);
-                    setMensagemSucesso('🔥 Agendamento realizado! Te esperamos na Pimenta Barber! 🌶️');
-                    setAgendamentoForm({ nome: '', telefone: '', servico: '', data: '', horario: '' });
+                    setAgendamentos(updatedPublic);
+                    setMyAppointments(loadUserAppointments()); 
+                    
+                    setMensagemSucesso('🔥 Agendamento realizado com sucesso! Te esperamos na Pimenta Barber! 🌶️');
+                    setAgendamentoForm({ nome: '', telefone: '', servico: '', barbeiro: '', data: '', horario: '' });
+                    
                     setTimeout(() => {
                         setMensagemSucesso('');
-                        setActiveTab('home');
+                        setActiveTab('meus-agendamentos'); 
                     }, 3000);
-                } else {
-                    setMensagemSucesso('⚠️ Preencha todos os campos!');
+
+                } catch (error) {
+                    console.error("Error adding appointment: ", error);
+                    setMensagemSucesso('❌ Erro ao salvar agendamento localmente. Tente mais tarde.');
                     setTimeout(() => setMensagemSucesso(''), 3000);
                 }
             };
+            
+            const cancelarAgendamento = async (appt) => {
+                if (!appt.id || !appt.barberName) return;
+
+                setMensagemSucesso(`Confirmando cancelamento do horário de ${appt.time} do dia ${formatDateForDisplay(appt.date)}...`);
+                
+                try {
+                    // Simula a remoção no "Banco de Dados" (localStorage)
+                    removeAppointmentLocally(appt);
+                    
+                    // Atualiza o estado da aplicação
+                    const publicAppointments = loadAllAppointments();
+                    setAgendamentos(publicAppointments);
+                    setMyAppointments(loadUserAppointments());
+                    
+                    setMensagemSucesso('✅ Agendamento cancelado com sucesso! Slot liberado. ✂️');
+                    setTimeout(() => setMensagemSucesso(''), 3000);
+                } catch (error) {
+                    console.error("Error cancelling appointment: ", error);
+                    setMensagemSucesso('❌ Erro ao cancelar agendamento. Tente novamente.');
+                    setTimeout(() => setMensagemSucesso(''), 4000);
+                }
+            };
+
+            const formatDateForDisplay = (dateString) => {
+                const date = new Date(dateString + 'T12:00:00');
+                return date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+            }
+            
+            const isFutureAppointment = (dateString, timeString) => {
+                const now = new Date();
+                const appointmentDateTime = new Date(`${dateString}T${timeString}:00`);
+                // Considera um agendamento futuro se for daqui a mais de 1 hora
+                return appointmentDateTime.getTime() > now.getTime() - (60 * 60 * 1000); 
+            };
+
+            const LoadingSpinner = () => (
+                <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600"></div>
+                    <p className="text-xl text-gray-400 ml-4">Carregando dados...</p>
+                </div>
+            );
+
+            const AppointmentsList = () => (
+                <div className="p-6 max-w-3xl mx-auto">
+                    <h2 className="text-4xl font-bold text-center mb-8 text-white tracking-wider">
+                        📝 MEUS AGENDAMENTOS
+                    </h2>
+
+                    <button
+                        onClick={() => setActiveTab('agendar')}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-bold text-lg transition transform hover:scale-105 shadow-2xl mb-6 flex items-center justify-center gap-2"
+                    >
+                        <span className="text-2xl">➕</span> NOVO AGENDAMENTO
+                    </button>
+
+                    <div className="space-y-4">
+                        {myAppointments.length > 0 ? (
+                            myAppointments.map(appt => {
+                                const isFuture = isFutureAppointment(appt.date, appt.time);
+                                const statusClass = isFuture 
+                                    ? 'bg-gradient-to-r from-gray-900 to-black border-red-400 hover:shadow-red-700/50' 
+                                    : 'bg-gray-800 border-gray-600 opacity-70';
+                                const statusText = isFuture ? 'Próximo' : 'Concluído';
+
+                                return (
+                                    <div key={appt.id} className={`p-5 rounded-xl shadow-xl border-2 transition ${statusClass}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="text-xl font-extrabold text-red-500">{appt.serviceName}</h3>
+                                            <span className={`px-3 py-1 text-sm rounded-full font-bold ${isFuture ? 'bg-red-300 text-red-900' : 'bg-gray-600 text-gray-300'}`}>
+                                                {statusText}
+                                            </span>
+                                        </div>
+                                        <div className="text-lg text-gray-200 space-y-1 mb-4">
+                                            <p className="flex items-center gap-2">
+                                                <span className="text-xl">💈</span> Barbeiro: <span className="font-bold text-red-400">{appt.barberName}</span>
+                                            </p>
+                                            <p className="flex items-center gap-2">
+                                                <span className="text-xl">📅</span> {formatDateForDisplay(appt.date)}
+                                            </p>
+                                            <p className="flex items-center gap-2">
+                                                <span className="text-xl">⏰</span> {appt.time}
+                                            </p>
+                                            <p className="flex items-center gap-2 text-sm text-gray-400">
+                                                Cliente: {appt.clientName}
+                                            </p>
+                                        </div>
+                                        
+                                        {isFuture && (
+                                            <button
+                                                onClick={() => cancelarAgendamento(appt)}
+                                                className="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg font-bold transition transform hover:scale-[1.02] text-sm mt-3"
+                                            >
+                                                ❌ CANCELAR AGENDAMENTO
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center p-12 bg-gray-900 rounded-xl shadow-inner text-gray-400 border border-gray-700">
+                                <span className="text-6xl mb-4 block">🌶️</span>
+                                <p className="text-xl font-bold">Você ainda não possui agendamentos conosco.</p>
+                                <p className="mt-2">Use o botão acima para marcar seu horário!</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
 
             return (
                 <div className="min-h-screen bg-black">
-                    {/* NavBar */}
                     <nav className="bg-pimenta text-white p-4 sticky top-0 z-50 shadow-2xl border-b-2 border-red-600">
                         <div className="flex justify-between items-center max-w-6xl mx-auto">
                             <h1 className="text-2xl font-bold tracking-wider" style={{letterSpacing: '2px'}}>
@@ -134,27 +432,31 @@
                         </div>
                         {menuOpen && (
                             <div className="mt-4 space-y-2 md:hidden">
-                                {['home', 'servicos', 'produtos', 'agendar'].map(tab => (
+                                {['home', 'servicos', 'produtos', 'meus-agendamentos', 'agendar'].map(tab => (
                                     <button
                                         key={tab}
                                         onClick={() => { setActiveTab(tab); setMenuOpen(false); }}
                                         className="block w-full text-left p-3 hover:bg-red-900 rounded-lg capitalize font-bold transition"
                                     >
-                                        {tab === 'home' ? '🏠 Início' : tab === 'servicos' ? '💈 Serviços' : tab === 'produtos' ? '🛍️ Loja' : '📅 Agendar'}
+                                        {tab === 'home' ? '🏠 Início' : tab === 'servicos' ? '💈 Serviços' : tab === 'produtos' ? '🛍️ Loja' : tab === 'agendar' ? '📅 Agendar' : '📝 Meus Agendamentos'}
                                     </button>
                                 ))}
                             </div>
                         )}
                     </nav>
 
-                    {/* Mensagem de Sucesso */}
                     {mensagemSucesso && (
                         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-red-600 to-red-800 text-white px-6 py-3 rounded-lg shadow-2xl z-50 animate-bounce font-bold">
                             {mensagemSucesso}
                         </div>
                     )}
 
-                    {/* Conteúdo */}
+                    {userId && (
+                        <div className="text-center bg-gray-900 text-gray-400 text-xs py-1 tracking-wider">
+                            ID do Usuário (Local Storage): <span className="font-mono text-red-400">{userId}</span>
+                        </div>
+                    )}
+
                     <div className="pb-20">
                         {activeTab === 'home' && (
                             <div className="min-h-screen bg-black">
@@ -236,7 +538,7 @@
                                                     </p>
                                                 </div>
                                                 <span className="bg-red-600 text-white px-5 py-3 rounded-full font-bold text-xl shadow-lg">
-                                                    R$ {servico.preco}
+                                                    R$ {servico.preco.toFixed(2)}
                                                 </span>
                                             </div>
                                         </div>
@@ -315,100 +617,149 @@
                                     📅 AGENDAR HORÁRIO
                                 </h2>
                                 <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl shadow-2xl border-2 border-red-600">
-                                    <div className="space-y-6">
-                                        <div>
-                                            <label className="block font-bold mb-3 text-white text-lg">NOME COMPLETO</label>
-                                            <input
-                                                type="text"
-                                                value={agendamentoForm.nome}
-                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, nome: e.target.value})}
-                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
-                                                placeholder="Seu nome"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block font-bold mb-3 text-white text-lg">TELEFONE</label>
-                                            <input
-                                                type="tel"
-                                                value={agendamentoForm.telefone}
-                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, telefone: e.target.value})}
-                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
-                                                placeholder="(00) 00000-0000"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block font-bold mb-3 text-white text-lg">SERVIÇO</label>
-                                            <select
-                                                value={agendamentoForm.servico}
-                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, servico: e.target.value})}
-                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
-                                            >
-                                                <option value="">Selecione um serviço</option>
-                                                {servicos.map(s => (
-                                                    <option key={s.id} value={s.nome}>{s.icon} {s.nome} - R$ {s.preco}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label className="block font-bold mb-3 text-white text-lg">DATA</label>
-                                            <select
-                                                value={agendamentoForm.data}
-                                                onChange={(e) => setAgendamentoForm({...agendamentoForm, data: e.target.value, horario: ''})}
-                                                className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
-                                            >
-                                                <option value="">Selecione uma data</option>
-                                                {agendamentos.map(dia => (
-                                                    <option key={dia.data} value={dia.data}>
-                                                        {new Date(dia.data + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        {agendamentoForm.data && (
+                                    {isDataLoading ? <LoadingSpinner /> : (
+                                        <div className="space-y-6">
                                             <div>
-                                                <label className="block font-bold mb-4 text-white text-lg">HORÁRIO DISPONÍVEL</label>
-                                                <div className="grid grid-cols-3 gap-3">
-                                                    {agendamentos.find(d => d.data === agendamentoForm.data)?.horarios.map(horario => (
+                                                <label className="block font-bold mb-3 text-white text-lg">NOME COMPLETO</label>
+                                                <input
+                                                    type="text"
+                                                    value={agendamentoForm.nome}
+                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, nome: e.target.value})}
+                                                    className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                                    placeholder="Seu nome"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block font-bold mb-3 text-white text-lg">TELEFONE</label>
+                                                <input
+                                                    type="tel"
+                                                    value={agendamentoForm.telefone}
+                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, telefone: e.target.value})}
+                                                    className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                                    placeholder="(00) 00000-0000"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block font-bold mb-3 text-white text-lg">SERVIÇO</label>
+                                                <select
+                                                    value={agendamentoForm.servico}
+                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, servico: e.target.value})}
+                                                    className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                                >
+                                                    <option value="">Selecione um serviço</option>
+                                                    {servicos.map(s => (
+                                                        <option key={s.id} value={s.nome}>{s.icon} {s.nome} - R$ {s.preco.toFixed(2)}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="block font-bold mb-3 text-white text-lg">BARBEIRO</label>
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                    {barbeiros.map(barbeiro => (
                                                         <button
-                                                            key={horario}
-                                                            onClick={() => setAgendamentoForm({...agendamentoForm, horario})}
+                                                            key={barbeiro.id}
+                                                            type="button"
+                                                            onClick={() => setAgendamentoForm({...agendamentoForm, barbeiro: barbeiro.nome, horario: ''})}
                                                             className={`p-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${
-                                                                agendamentoForm.horario === horario
-                                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50'
+                                                                agendamentoForm.barbeiro === barbeiro.nome
+                                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50 border-2 border-red-400'
                                                                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border-2 border-gray-700'
                                                             }`}
                                                         >
-                                                            {horario}
+                                                            <div className="text-3xl mb-2">{barbeiro.icon}</div>
+                                                            <div className="text-base">{barbeiro.nome}</div>
+                                                            <div className="text-xs text-gray-400 mt-1">{barbeiro.especialidade}</div>
                                                         </button>
                                                     ))}
                                                 </div>
                                             </div>
-                                        )}
 
-                                        <button
-                                            onClick={realizarAgendamento}
-                                            className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl mt-8"
-                                        >
-                                            ✓ CONFIRMAR AGENDAMENTO
-                                        </button>
-                                    </div>
+                                            <div>
+                                                <label className="block font-bold mb-3 text-white text-lg">DATA</label>
+                                                <select
+                                                    value={agendamentoForm.data}
+                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, data: e.target.value, horario: ''})}
+                                                    className="w-full p-4 border-2 border-gray-700 bg-gray-800 text-white rounded-xl focus:border-red-600 outline-none text-lg"
+                                                >
+                                                    <option value="">Selecione uma data</option>
+                                                    {futureDates.map(date => (
+                                                        <option key={date} value={date}>
+                                                            {formatDateForDisplay(date)}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            {agendamentoForm.data && agendamentoForm.barbeiro && (
+                                                <div>
+                                                    <label className="block font-bold mb-4 text-white text-lg">
+                                                        HORÁRIOS DISPONÍVEIS - {agendamentoForm.barbeiro}
+                                                    </label>
+                                                    <div className="grid grid-cols-3 gap-3">
+                                                        {getAvailableSlots(agendamentoForm.data, agendamentoForm.barbeiro).length > 0 ? (
+                                                            getAvailableSlots(agendamentoForm.data, agendamentoForm.barbeiro).map(horario => (
+                                                                <button
+                                                                    key={horario}
+                                                                    onClick={() => setAgendamentoForm({...agendamentoForm, horario})}
+                                                                    className={`p-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${
+                                                                        agendamentoForm.horario === horario
+                                                                            ? 'bg-red-600 text-white shadow-lg shadow-red-600/50'
+                                                                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border-2 border-gray-700'
+                                                                    }`}
+                                                                >
+                                                                    {horario}
+                                                                </button>
+                                                            ))
+                                                        ) : (
+                                                            <p className="text-red-400 col-span-3 text-center p-4 bg-gray-800 rounded-xl">
+                                                                Nenhum horário disponível com {agendamentoForm.barbeiro} nesta data. 😔
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {agendamentoForm.data && !agendamentoForm.barbeiro && (
+                                                <div className="bg-yellow-900/30 border-2 border-yellow-600 p-4 rounded-xl">
+                                                    <p className="text-yellow-400 text-center font-bold">
+                                                        ⚠️ Selecione um barbeiro para ver os horários disponíveis
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            <button
+                                                onClick={realizarAgendamento}
+                                                disabled={!agendamentoForm.nome || !agendamentoForm.servico || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario}
+                                                className={`w-full py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl mt-8 
+                                                    ${(!agendamentoForm.nome || !agendamentoForm.servico || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario)
+                                                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                                        : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white'
+                                                    }`}
+                                            >
+                                                ✓ CONFIRMAR AGENDAMENTO
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
+
+                        {activeTab === 'meus-agendamentos' && (
+                            <AppointmentsList />
+                        )}
                     </div>
 
-                    {/* Menu Inferior Mobile */}
                     <div className="fixed bottom-0 left-0 right-0 bg-black shadow-2xl border-t-2 border-red-600 md:hidden">
                         <div className="flex justify-around p-2">
                             {[
                                 { id: 'home', icon: '🏠', label: 'Início' },
                                 { id: 'servicos', icon: '💈', label: 'Serviços' },
                                 { id: 'produtos', icon: '🛍️', label: 'Loja' },
-                                { id: 'agendar', icon: '📅', label: 'Agendar' }
+                                { id: 'agendar', icon: '📅', label: 'Agendar' },
+                                { id: 'meus-agendamentos', icon: '📝', label: 'Meus Ag.' }
                             ].map(tab => (
                                 <button
                                     key={tab.id}
