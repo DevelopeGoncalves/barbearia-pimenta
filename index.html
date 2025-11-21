@@ -54,12 +54,12 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        'pimenta-principal': '#1a1a1a',      /* Preto/Cinza Escuro (Fundo Principal) */
-                        'pimenta-light-bg': '#2c2c2c',       /* Fundo de Cards (Um pouco mais claro que o principal) */
-                        'pimenta-accent': '#FF4444',         /* Vermelho/Coral Vibrante (ACENTO PRINCIPAL - Botões) */
-                        'pimenta-detail': '#B8D94C',         /* Verde Limão (Detalhes/Bordas - Fiel à Logo) */
-                        'pimenta-dark-text': '#1a1a1a',      /* Usado para texto escuro (em fundos claros) */
-                        'pimenta-light-text': '#F5E6D3',     /* Bege/Creme (Texto Claro) */
+                        'pimenta-principal': '#1a1a1a',      /* Preto/Cinza Escuro (Fundo Principal) */
+                        'pimenta-light-bg': '#2c2c2c',       /* Fundo de Cards (Um pouco mais claro que o principal) */
+                        'pimenta-accent': '#FF4444',         /* Vermelho/Coral Vibrante (ACENTO PRINCIPAL - Botões) */
+                        'pimenta-detail': '#B8D94C',         /* Verde Limão (Detalhes/Bordas - Fiel à Logo) */
+                        'pimenta-dark-text': '#1a1a1a',      /* Usado para texto escuro (em fundos claros) */
+                        'pimenta-light-text': '#F5E6D3',     /* Bege/Creme (Texto Claro) */
                         'pimenta-secondary-accent': '#FFB84D',/* Laranja (Acento Secundário - Preços) */
                     }
                 },
@@ -103,15 +103,26 @@
                 { id: 11, nome: 'Corte Social na Tesoura', preco: 30.00, duracao: '40 min', icon: '⭐' },
                 { id: 12, nome: 'Listrinha', preco: 5.00, duracao: '5 min', icon: '⭐' },
             ],
+            // PRODUTOS ATUALIZADOS COM IMAGENS E CATEGORIAS CLARAS
             produtos: [
-                { id: 1, nome: 'Camisa de Time Atuais', preco: 90.00, categoria: 'camisa', img: '🔴⚫' },
-                { id: 2, nome: 'Camisa de Retrô', preco: 110.00, categoria: 'camisa', img: '🟢⚪' },
-                { id: 3, nome: 'Camisa de time Basquete', preco: 90.00, categoria: 'camisa', img: '⚫⚪' },
-                { id: 4, nome: 'Minoxidill', preco: 85.00, categoria: 'Minoxidil', img: '🖤' },
-                { id: 5, nome: 'Perfume Ocean Blue', preco: 110.00, categoria: 'perfume', img: '💙' },
-                { id: 6, nome: 'Gel Black White', preco: 25.00, categoria: 'Gel', img: '🧴' },
-                { id: 7, nome: 'Pomada Modeladora', preco: 30.00, categoria: 'creme', img: '💈' },
-                { id: 8, nome: '-', preco: 50.00, categoria: 'creme', img: '🧴' },
+                // Camisas
+                { id: 101, nome: 'Camisa de Time (Atual)', preco: 90.00, categoria: 'Camisas de Times', imgPath: './img/camisa_atual.jpg' },
+                { id: 102, nome: 'Camisa Retrô', preco: 110.00, categoria: 'Camisas de Times', imgPath: './img/camisa_retro.jpg' },
+                { id: 103, nome: 'Camisa Basquete', preco: 90.00, categoria: 'Camisas de Times', imgPath: './img/camisa_basquete.jpg' },
+                
+                // Perfumes (6 tipos)
+                { id: 201, nome: 'Perfume Ocean Blue', preco: 110.00, categoria: 'Perfumes', imgPath: './img/perfume_ocean.jpg' },
+                { id: 202, nome: 'Perfume Black Ice', preco: 125.00, categoria: 'Perfumes', imgPath: './img/perfume_black.jpg' },
+                { id: 203, nome: 'Perfume Sport Red', preco: 100.00, categoria: 'Perfumes', imgPath: './img/perfume_sport.jpg' },
+                { id: 204, nome: 'Perfume Golden Night', preco: 140.00, categoria: 'Perfumes', imgPath: './img/perfume_golden.jpg' },
+                { id: 205, nome: 'Perfume Fresh Citrus', preco: 95.00, categoria: 'Perfumes', imgPath: './img/perfume_citrus.jpg' },
+                { id: 206, nome: 'Perfume Classic Wood', preco: 115.00, categoria: 'Perfumes', imgPath: './img/perfume_wood.jpg' },
+
+                // Produtos de Cabelo (Creme/Gel/Minoxidil)
+                { id: 301, nome: 'Minoxidil Crescimento', preco: 85.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_minoxidil.jpg' },
+                { id: 302, nome: 'Gel Black White', preco: 25.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_gel.jpg' },
+                { id: 303, nome: 'Pomada Modeladora', preco: 30.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_pomada.jpg' },
+                { id: 304, nome: 'Shampoo Pós-Corte', preco: 50.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_shampoo.jpg' },
             ]
         };
     </script>
@@ -188,9 +199,7 @@
             window.open(whatsappLink, '_blank');
         };
 
-        // NOVA FUNÇÃO: Envio de Pedido de Compra
         const sendWhatsAppOrderNotification = (carrinho, total, barbeiros) => {
-            // Assume-se que Diego (id: 1) é o destinatário
             const barbeiroDiego = barbeiros.find(b => b.nome === 'Diego');
             if (!barbeiroDiego || !barbeiroDiego.telefone) {
                 console.error("Telefone do Barbeiro Diego não encontrado.");
@@ -198,9 +207,8 @@
                 return;
             }
 
-            // Simulação de Dados do Cliente (Se o app fosse real, obteríamos isso da Autenticação)
             const clientName = "Cliente do App"; 
-            const clientPhone = "(27) 99999-0000"; // Telefone genérico para o Barbeiro identificar a origem
+            const clientPhone = "(27) 99999-0000"; 
 
             let itemsList = carrinho.map(item => 
                 `* ${item.quantidade}x ${item.nome} (R$ ${item.preco.toFixed(2)} cada)`
@@ -209,7 +217,7 @@
             const message = `🛍️ *NOVO PEDIDO DE COMPRA - LOJA PIMENTA!* 🌶️\n\n` +
                             `*Cliente:* ${clientName}\n` +
                             `*Contato:* ${clientPhone}\n\n` +
-                            `*ITENS DO PEDIDO (${carrinho.length} tipo(s)):*\n` +
+                            `*ITENS DO PEDIDO (${carrinho.reduce((acc, item) => acc + item.quantidade, 0)} itens):*\n` +
                             `${itemsList}\n\n` +
                             `*TOTAL:* R$ ${total}\n\n` +
                             `Favor entrar em contato com o cliente para finalizar a venda e entrega.`;
@@ -224,6 +232,7 @@
         // --- FUNÇÕES DO BACKEND FIRESTORE REAIS ---
 
         const loadAllAppointmentsFromFirestore = async (setAgendamentos) => {
+            // (Funções do Firebase omitidas para concisão, permanecem as mesmas)
             try {
                 const todayDate = new Date().toISOString().slice(0, 10);
                 const snapshot = await db.collection("agendamentos")
@@ -245,6 +254,7 @@
         };
 
         const loadUserAppointmentsFromFirestore = async (userId, setMyAppointments) => {
+            // (Funções do Firebase omitidas para concisão, permanecem as mesmas)
             try {
                 const snapshot = await db.collection("agendamentos")
                     .where("userId", "==", userId)
@@ -267,6 +277,7 @@
         };
 
         const cancelAppointmentInFirestore = async (apptId) => {
+            // (Funções do Firebase omitidas para concisão, permanecem as mesmas)
             try {
                 await db.collection("agendamentos").doc(apptId).delete();
                 return true;
@@ -274,6 +285,82 @@
                 console.error("Erro ao cancelar agendamento:", error);
                 throw new Error("Falha ao cancelar o agendamento no servidor.");
             }
+        };
+
+
+        // Componente Card de Produto
+        const ProductCard = ({ produto, adicionarAoCarrinho }) => {
+            return (
+                <div className="bg-pimenta-light-bg p-4 rounded-2xl shadow-2xl hover:shadow-pimenta-detail/50 transition border-2 border-pimenta-light-bg hover:border-pimenta-detail transform hover:scale-[1.03]">
+                    <div className="relative w-full h-48 mb-4 overflow-hidden rounded-xl">
+                        {/* Imagem Placeholder - O src DEVE SER REAL PARA FUNCIONAR */}
+                        <img 
+                            src={produto.imgPath} 
+                            alt={produto.nome} 
+                            className="w-full h-full object-cover" 
+                            onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300x200?text=Pimenta+Barber"; }}
+                        />
+                        <span className="absolute top-2 right-2 bg-pimenta-detail text-pimenta-dark-text text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                            {produto.categoria}
+                        </span>
+                    </div>
+                    <h3 className="text-xl font-bold text-pimenta-light-text mb-3 text-left min-h-[56px]">{produto.nome}</h3>
+                    <div className="flex justify-between items-center gap-3">
+                        <span className="text-3xl font-bold text-pimenta-secondary-accent">R$ {produto.preco.toFixed(2)}</span>
+                        <button
+                            onClick={() => adicionarAoCarrinho(produto)}
+                            className="bg-pimenta-accent hover:bg-pimenta-secondary-accent text-pimenta-light-text px-5 py-3 rounded-xl font-bold transition transform hover:scale-105 shadow-lg"
+                        >
+                            🛒 Add
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+        
+        // NOVO Componente: Card de Categoria
+        const CategoryCard = ({ title, icon, imagePath, onClick }) => (
+            <button 
+                onClick={onClick}
+                className="w-full bg-pimenta-light-bg p-6 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105 group"
+            >
+                <div className="relative w-full h-40 mb-4 overflow-hidden rounded-xl">
+                    <img 
+                        src={imagePath} 
+                        alt={title} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300x200?text=Pimenta+Barber"; }}
+                    />
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                         <div className="text-5xl text-pimenta-detail group-hover:text-pimenta-accent transition">{icon}</div>
+                    </div>
+                </div>
+                <h3 className="font-bold text-2xl mt-3 text-pimenta-light-text group-hover:text-pimenta-accent">{title}</h3>
+                <p className="text-pimenta-detail text-sm mt-1">Clique para ver os itens!</p>
+            </button>
+        );
+
+        // NOVO Componente: Lista de Produtos por Categoria
+        const ProductList = ({ category, produtos, adicionarAoCarrinho, setActiveProductView }) => {
+            const filteredProducts = produtos.filter(p => p.categoria === category);
+
+            return (
+                <div className="fade-in">
+                    <button 
+                        onClick={() => setActiveProductView(null)}
+                        className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition"
+                    >
+                        <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu de Categorias</span>
+                    </button>
+                    <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">{category}</h3>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {filteredProducts.map(produto => (
+                            <ProductCard key={produto.id} produto={produto} adicionarAoCarrinho={adicionarAoCarrinho} />
+                        ))}
+                    </div>
+                </div>
+            );
         };
 
 
@@ -289,7 +376,10 @@
             
             const [barbeiros] = useState(CONFIG_BARBEIROS);
             const [servicos] = useState(CONFIG_SERVICOS);
-            const [produtos] = useState(CONFIG_PRODUTOS);
+            const [produtos] = useState(CONFIG_PRODUTOS); 
+            
+            // NOVO ESTADO: Qual tela de produto estamos vendo? (null = Menu)
+            const [activeProductView, setActiveProductView] = useState(null); 
 
             // Carrinho: Agora armazena objetos { ...produto, quantidade: N }
             const [carrinho, setCarrinho] = useState([]);
@@ -329,6 +419,13 @@
                 };
                 loadData();
             }, [isAuthReady, userId]);
+
+            // Resetar a visão da loja ao mudar de aba
+             useEffect(() => {
+                if (activeTab !== 'produtos') {
+                    setActiveProductView(null);
+                }
+            }, [activeTab]);
 
 
             const getAvailableSlots = useCallback((date, barberName) => {
@@ -569,6 +666,113 @@
                 </div>
             );
 
+            // Dados estáticos para o Menu de Categorias
+            const CATEGORIES = [
+                { 
+                    title: 'Camisas de Times', 
+                    categoryName: 'Camisas de Times', 
+                    icon: '⚽',
+                    imagePath: './img/camisa_atual.jpg' // Imagem representativa
+                },
+                { 
+                    title: 'Perfumes', 
+                    categoryName: 'Perfumes', 
+                    icon: '💧',
+                    imagePath: './img/perfume_ocean.jpg' // Imagem representativa
+                },
+                { 
+                    title: 'Produtos de Cabelo', 
+                    categoryName: 'Produtos de Cabelo', 
+                    icon: '🧴',
+                    imagePath: './img/produto_pomada.jpg' // Imagem representativa
+                }
+            ];
+
+            // Renderização da aba de Produtos (Loja)
+            const ProductShop = () => {
+                return (
+                    <div className="p-6 max-w-6xl mx-auto fade-in">
+                        <h2 className="text-4xl font-bold text-center mb-12 text-pimenta-light-text tracking-wider">
+                            🛍️ NOSSA LOJA
+                        </h2>
+                        
+                        {carrinho.length > 0 && (
+                            <div className="bg-pimenta-light-bg border-2 border-pimenta-accent p-6 mb-8 rounded-2xl shadow-2xl sticky top-20 z-40">
+                                <div className="flex justify-between items-center text-pimenta-light-text">
+                                    <span className="font-bold text-xl">🛒 Carrinho: {carrinho.reduce((acc, item) => acc + item.quantidade, 0)} itens</span>
+                                    <span className="text-3xl font-bold text-pimenta-accent">R$ {calcularTotal()}</span>
+                                    <button 
+                                        onClick={finalizarCompra}
+                                        className="bg-pimenta-accent hover:bg-pimenta-secondary-accent text-pimenta-light-text px-5 py-3 rounded-xl font-bold text-lg transition transform hover:scale-105 shadow-2xl"
+                                    >
+                                        Comprar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeProductView ? (
+                            // Tela de lista de produtos da categoria selecionada
+                            <ProductList 
+                                category={activeProductView} 
+                                produtos={produtos} 
+                                adicionarAoCarrinho={adicionarAoCarrinho} 
+                                setActiveProductView={setActiveProductView} 
+                            />
+                        ) : (
+                            // Menu principal de Categorias
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
+                                {CATEGORIES.map(category => (
+                                    <CategoryCard 
+                                        key={category.categoryName}
+                                        title={category.title}
+                                        icon={category.icon}
+                                        imagePath={category.imagePath}
+                                        onClick={() => setActiveProductView(category.categoryName)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                        
+                        {/* Exibir Carrinho Detalhado SOMENTE quando estiver na tela principal do menu ou em uma lista de produtos */}
+                        {carrinho.length > 0 && (
+                            <div className="mt-12 bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl border-2 border-pimenta-detail">
+                                <h3 className="text-3xl font-bold mb-6 text-pimenta-accent">🛒 CARRINHO DE COMPRAS</h3>
+                                {carrinho.map((item) => (
+                                    <div key={item.id} className="flex justify-between items-center border-b border-pimenta-principal py-4 text-pimenta-light-text">
+                                        <span className="text-lg flex items-center">
+                                            <span className="font-bold text-pimenta-detail mr-3">{item.quantidade}x</span> 
+                                            {item.nome}
+                                        </span>
+                                        <div className="flex items-center gap-6">
+                                            <span className="font-bold text-xl text-pimenta-secondary-accent">R$ {(item.preco * item.quantidade).toFixed(2)}</span>
+                                            <button
+                                                onClick={() => removerDoCarrinho(item.id)}
+                                                className="text-pimenta-detail hover:text-pimenta-accent text-2xl font-bold transition"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="mt-6 pt-6 border-t-2 border-pimenta-detail">
+                                    <div className="flex justify-between items-center text-2xl font-bold text-pimenta-light-text mb-6">
+                                        <span>TOTAL:</span>
+                                        <span className="text-pimenta-accent">R$ {calcularTotal()}</span>
+                                    </div>
+                                    <button 
+                                        onClick={finalizarCompra} 
+                                        className="w-full bg-pimenta-accent hover:bg-pimenta-detail text-pimenta-light-text py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl"
+                                    >
+                                        ✓ ENVIAR PEDIDO PARA DIEGO (WhatsApp)
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+            
             return (
                 <div className="min-h-screen bg-pimenta-principal">
                     <nav className="bg-pimenta text-pimenta-light-text p-4 sticky top-0 z-50 shadow-2xl border-b-2 border-pimenta-detail">
@@ -695,77 +899,8 @@
                             </div>
                         )}
 
-                        {activeTab === 'produtos' && (
-                            <div className="p-6 max-w-6xl mx-auto fade-in">
-                                <h2 className="text-4xl font-bold text-center mb-12 text-pimenta-light-text tracking-wider">
-                                    🛍️ NOSSA LOJA
-                                </h2>
-                                
-                                {carrinho.length > 0 && (
-                                    <div className="bg-pimenta-light-bg border-2 border-pimenta-detail p-6 mb-8 rounded-2xl shadow-2xl">
-                                        <div className="flex justify-between items-center text-pimenta-light-text">
-                                            <span className="font-bold text-xl">🛒 Carrinho: {carrinho.reduce((acc, item) => acc + item.quantidade, 0)} itens</span>
-                                            <span className="text-3xl font-bold text-pimenta-accent">R$ {calcularTotal()}</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {produtos.map(produto => (
-                                        <div key={produto.id} className="bg-pimenta-light-bg p-6 rounded-2xl shadow-2xl hover:shadow-pimenta-detail/50 transition border-2 border-pimenta-light-bg hover:border-pimenta-detail transform hover:scale-105">
-                                            <div className="text-6xl text-center mb-4">{produto.img}</div>
-                                            <h3 className="text-xl font-bold text-pimenta-light-text mb-3 text-center">{produto.nome}</h3>
-                                            <div className="flex justify-between items-center gap-3">
-                                                <span className="text-3xl font-bold text-pimenta-secondary-accent">R$ {produto.preco.toFixed(2)}</span>
-                                                <button
-                                                    onClick={() => adicionarAoCarrinho(produto)}
-                                                    className="bg-pimenta-accent hover:bg-pimenta-secondary-accent text-pimenta-light-text px-5 py-3 rounded-xl font-bold transition transform hover:scale-105 shadow-lg"
-                                                >
-                                                    🛒 Add
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {carrinho.length > 0 && (
-                                    <div className="mt-12 bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl border-2 border-pimenta-detail">
-                                        <h3 className="text-3xl font-bold mb-6 text-pimenta-accent">🛒 CARRINHO DE COMPRAS</h3>
-                                        {/* Tabela de itens do carrinho */}
-                                        {carrinho.map((item) => (
-                                            <div key={item.id} className="flex justify-between items-center border-b border-pimenta-principal py-4 text-pimenta-light-text">
-                                                <span className="text-lg flex items-center">
-                                                    <span className="font-bold text-pimenta-detail mr-3">{item.quantidade}x</span> 
-                                                    {item.nome}
-                                                </span>
-                                                <div className="flex items-center gap-6">
-                                                    <span className="font-bold text-xl text-pimenta-secondary-accent">R$ {(item.preco * item.quantidade).toFixed(2)}</span>
-                                                    <button
-                                                        onClick={() => removerDoCarrinho(item.id)}
-                                                        className="text-pimenta-detail hover:text-pimenta-accent text-2xl font-bold transition"
-                                                    >
-                                                        ✕
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        <div className="mt-6 pt-6 border-t-2 border-pimenta-detail">
-                                            <div className="flex justify-between items-center text-2xl font-bold text-pimenta-light-text mb-6">
-                                                <span>TOTAL:</span>
-                                                <span className="text-pimenta-accent">R$ {calcularTotal()}</span>
-                                            </div>
-                                            <button 
-                                                onClick={finalizarCompra} // Chama a nova função de envio de pedido
-                                                className="w-full bg-pimenta-accent hover:bg-pimenta-detail text-pimenta-light-text py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl"
-                                            >
-                                                ✓ ENVIAR PEDIDO PARA DIEGO (WhatsApp)
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
+                        {activeTab === 'produtos' && <ProductShop />}
+                        
                         {activeTab === 'agendar' && (
                             <div className="p-6 max-w-3xl mx-auto fade-in">
                                 <h2 className="text-4xl font-bold text-center mb-12 text-pimenta-light-text tracking-wider">
