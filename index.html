@@ -91,17 +91,20 @@
             ],
             servicos: [
                 { id: 1, nome: 'Corte Masculino', preco: 30.00, duracao: '40 min', icon: '✂️' },
+                { id: 11, nome: 'Corte Social na maquina', preco: 25.00, duracao: '40 min', icon: '⭐' },
+                { id: 12, nome: 'Corte Social na Tesoura', preco: 30.00, duracao: '40 min', icon: '⭐' },
+                { id: 10, nome: 'Corte Infantil', preco: 35.00, duracao: '45 min', icon: '⭐' },
+                { id: 1, nome: 'Bigode', preco: 5.00, duracao: '5 min', icon: '✂️' },
                 { id: 2, nome: 'Barba', preco: 20.00, duracao: '15 min', icon: '🪒' },
+                { id: 2, nome: 'Cavanhaque', preco: 15.00, duracao: '15 min', icon: '🪒' },
                 { id: 3, nome: 'Corte + sobrancelha', preco: 35.00, duracao: '45 min', icon: '💈' },
                 { id: 4, nome: 'Pigmentação (cor preta)', preco: 15.00, duracao: '10 min', icon: '🎨' },
                 { id: 5, nome: 'Barba Pigmentada', preco: 30.00, duracao: '10 min', icon: '✨' },
-                { id: 6, nome: 'Sobrancelha', preco: 10.00, duracao: '5 min', icon: '👁️' },
-                { id: 7, nome: 'Platinado', preco: 80.00, duracao: '2 horas', icon: '⭐' },
-                { id: 8, nome: 'Luzes/reflexo', preco: 70.00, duracao: '2 horas', icon: '⭐' },
-                { id: 9, nome: 'Corte Infantil', preco: 35.00, duracao: '45 min', icon: '⭐' },
-                { id: 10, nome: 'Corte Social na maquina', preco: 25.00, duracao: '40 min', icon: '⭐' },
-                { id: 11, nome: 'Corte Social na Tesoura', preco: 30.00, duracao: '40 min', icon: '⭐' },
-                { id: 12, nome: 'Listrinha', preco: 5.00, duracao: '5 min', icon: '⭐' },
+                { id: 6, nome: 'Cavanhaque Pigmentado', preco: 25.00, duracao: '10 min', icon: '✨' },
+                { id: 7, nome: 'Sobrancelha', preco: 10.00, duracao: '5 min', icon: '👁️' },
+                { id: 8, nome: 'Platinado', preco: 80.00, duracao: ' apartir', icon: '⭐' },
+                { id: 9, nome: 'Luzes/reflexo', preco: 70.00, duracao: 'apartir', icon: '⭐' },
+                { id: 13, nome: 'Listrinha', preco: 5.00, duracao: '5 min', icon: '⭐' },
             ],
             // PRODUTOS ATUALIZADOS COM IMAGENS E CATEGORIAS CLARAS
             produtos: [
@@ -860,12 +863,8 @@
                                                 <span className="font-bold">(27) 99288-5769</span>
                                             </p>
                                             <p className="flex items-center gap-3 justify-center md:justify-start">
-                                                <span className="text-2xl text-pimenta-detail">✉️</span> 
-                                                <span className="font-bold">contato@pimentabarber.com.br</span>
-                                            </p>
-                                            <p className="flex items-center gap-3 justify-center md:justify-start">
                                                 <span className="text-2xl text-pimenta-detail">⏰</span> 
-                                                <span className="font-bold">Seg-Sex: 9h-20h | Sáb: 9h-18h</span>
+                                                <span className="font-bold">Seg-Sex: 9h-19h | Sáb: 9h-18h</span>
                                             </p>
                                         </div>
                                     </div>
@@ -910,7 +909,7 @@
                                     {isDataLoading ? <LoadingSpinner /> : (
                                         <div className="space-y-6">
                                             <div>
-                                                <label className="block font-bold mb-3 text-pimenta-light-text text-lg">NOME COMPLETO</label>
+                                                <label className="block font-bold mb-3 text-pimenta-light-text text-lg">NOME</label>
                                                 <input
                                                     type="text"
                                                     value={agendamentoForm.nome}
@@ -1073,4 +1072,5 @@
     </script>
 </body>
 </html>
+
 
