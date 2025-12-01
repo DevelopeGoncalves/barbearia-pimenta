@@ -45,6 +45,39 @@
                 max-height: 40px; 
             }
         }
+
+        /* Estilos específicos para o elemento <details> */
+        .service-details > summary {
+            list-style: none; /* Remove o marcador de lista padrão */
+            cursor: pointer;
+            padding: 1.5rem; /* p-6 */
+            border-radius: 1rem; /* rounded-2xl */
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .service-details > summary:hover {
+            background-color: #1a1a1a; /* pimenta-principal on hover */
+        }
+        
+        /* Adiciona ícone de seta customizado */
+        .service-details > summary::before {
+            content: '▶';
+            display: inline-block;
+            margin-right: 1rem;
+            transition: transform 0.2s ease-in-out;
+            color: #B8D94C; /* pimenta-detail */
+        }
+        
+        .service-details[open] > summary::before {
+            transform: rotate(90deg);
+        }
+        
+        .service-content {
+            padding: 1rem 0;
+            border-top: 1px solid #2c2c2c;
+            margin-top: -1px;
+            animation: fadeIn 0.4s ease-out;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -54,12 +87,12 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        'pimenta-principal': '#1a1a1a',      /* Preto/Cinza Escuro (Fundo Principal) */
-                        'pimenta-light-bg': '#2c2c2c',       /* Fundo de Cards (Um pouco mais claro que o principal) */
-                        'pimenta-accent': '#FF4444',         /* Vermelho/Coral Vibrante (ACENTO PRINCIPAL - Botões) */
-                        'pimenta-detail': '#B8D94C',         /* Verde Limão (Detalhes/Bordas - Fiel à Logo) */
-                        'pimenta-dark-text': '#1a1a1a',      /* Usado para texto escuro (em fundos claros) */
-                        'pimenta-light-text': '#F5E6D3',     /* Bege/Creme (Texto Claro) */
+                        'pimenta-principal': '#1a1a1a',      /* Preto/Cinza Escuro (Fundo Principal) */
+                        'pimenta-light-bg': '#2c2c2c',       /* Fundo de Cards (Um pouco mais claro que o principal) */
+                        'pimenta-accent': '#FF4444',         /* Vermelho/Coral Vibrante (ACENTO PRINCIPAL - Botões) */
+                        'pimenta-detail': '#B8D94C',         /* Verde Limão (Detalhes/Bordas - Fiel à Logo) */
+                        'pimenta-dark-text': '#1a1a1a',      /* Usado para texto escuro (em fundos claros) */
+                        'pimenta-light-text': '#F5E6D3',     /* Bege/Creme (Texto Claro) */
                         'pimenta-secondary-accent': '#FFB84D',/* Laranja (Acento Secundário - Preços) */
                     }
                 },
@@ -90,42 +123,96 @@
                 { id: 3, nome: 'João', icon: '👦🏻', especialidade: 'Pinturas & Platinados', telefone: '5527998887779' }
             ],
             servicos: [
-                { id: 1, nome: 'Corte Masculino', preco: 30.00, duracao: '40 min', icon: '✂️' },
-                { id: 11, nome: 'Corte Social na maquina', preco: 25.00, duracao: '40 min', icon: '⭐' },
-                { id: 12, nome: 'Corte Social na Tesoura', preco: 30.00, duracao: '40 min', icon: '⭐' },
-                { id: 10, nome: 'Corte Infantil', preco: 35.00, duracao: '45 min', icon: '⭐' },
-                { id: 1, nome: 'Bigode', preco: 5.00, duracao: '5 min', icon: '✂️' },
-                { id: 2, nome: 'Barba', preco: 20.00, duracao: '15 min', icon: '🪒' },
-                { id: 2, nome: 'Cavanhaque', preco: 15.00, duracao: '15 min', icon: '🪒' },
-                { id: 3, nome: 'Corte + sobrancelha', preco: 35.00, duracao: '45 min', icon: '💈' },
-                { id: 4, nome: 'Pigmentação (cor preta)', preco: 15.00, duracao: '10 min', icon: '🎨' },
-                { id: 5, nome: 'Barba Pigmentada', preco: 30.00, duracao: '10 min', icon: '✨' },
-                { id: 6, nome: 'Cavanhaque Pigmentado', preco: 25.00, duracao: '10 min', icon: '✨' },
-                { id: 7, nome: 'Sobrancelha', preco: 10.00, duracao: '5 min', icon: '👁️' },
-                { id: 8, nome: 'Platinado', preco: 80.00, duracao: ' apartir', icon: '⭐' },
-                { id: 9, nome: 'Luzes/reflexo', preco: 70.00, duracao: 'apartir', icon: '⭐' },
-                { id: 13, nome: 'Listrinha', preco: 5.00, duracao: '5 min', icon: '⭐' },
-            ],
-            // PRODUTOS ATUALIZADOS COM IMAGENS E CATEGORIAS CLARAS
-            produtos: [
-                // Camisas
-                { id: 101, nome: 'Camisa de Time (Atual)', preco: 90.00, categoria: 'Camisas de Times', imgPath: './img/camisa_atual.jpg' },
-                { id: 102, nome: 'Camisa Retrô', preco: 110.00, categoria: 'Camisas de Times', imgPath: './img/camisa_retro.jpg' },
-                { id: 103, nome: 'Camisa Basquete', preco: 90.00, categoria: 'Camisas de Times', imgPath: './img/camisa_basquete.jpg' },
+                // Agrupando por tipo para o Accordion
+                { id: 1, nome: 'Corte Masculino', preco: 30.00, duracao: '40 min', icon: '✂️', group: 'Cortes e Cabelo' },
+                { id: 11, nome: 'Corte Social na maquina', preco: 25.00, duracao: '40 min', icon: '⭐', group: 'Cortes e Cabelo' },
+                { id: 12, nome: 'Corte Social na Tesoura', preco: 30.00, duracao: '40 min', icon: '⭐', group: 'Cortes e Cabelo' },
+                { id: 10, nome: 'Corte Infantil', preco: 35.00, duracao: '45 min', icon: '⭐', group: 'Cortes e Cabelo' },
                 
-                // Perfumes (6 tipos)
-                { id: 201, nome: 'Perfume Ocean Blue', preco: 110.00, categoria: 'Perfumes', imgPath: './img/perfume_ocean.jpg' },
-                { id: 202, nome: 'Perfume Black Ice', preco: 125.00, categoria: 'Perfumes', imgPath: './img/perfume_black.jpg' },
-                { id: 203, nome: 'Perfume Sport Red', preco: 100.00, categoria: 'Perfumes', imgPath: './img/perfume_sport.jpg' },
-                { id: 204, nome: 'Perfume Golden Night', preco: 140.00, categoria: 'Perfumes', imgPath: './img/perfume_golden.jpg' },
-                { id: 205, nome: 'Perfume Fresh Citrus', preco: 95.00, categoria: 'Perfumes', imgPath: './img/perfume_citrus.jpg' },
-                { id: 206, nome: 'Perfume Classic Wood', preco: 115.00, categoria: 'Perfumes', imgPath: './img/perfume_wood.jpg' },
+                { id: 2, nome: 'Barba', preco: 20.00, duracao: '15 min', icon: '🪒', group: 'Barba e Detalhes' },
+                { id: 22, nome: 'Bigode', preco: 5.00, duracao: '5 min', icon: '✂️', group: 'Barba e Detalhes' },
+                { id: 23, nome: 'Cavanhaque', preco: 15.00, duracao: '15 min', icon: '🪒', group: 'Barba e Detalhes' },
+                { id: 3, nome: 'Corte + sobrancelha', preco: 35.00, duracao: '45 min', icon: '💈', group: 'Barba e Detalhes' },
+                { id: 7, nome: 'Sobrancelha', preco: 10.00, duracao: '5 min', icon: '👁️', group: 'Barba e Detalhes' },
 
-                // Produtos de Cabelo (Creme/Gel/Minoxidil)
-                { id: 301, nome: 'Minoxidil Crescimento', preco: 85.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_minoxidil.jpg' },
-                { id: 302, nome: 'Gel Black White', preco: 25.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_gel.jpg' },
-                { id: 303, nome: 'Pomada Modeladora', preco: 30.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_pomada.jpg' },
-                { id: 304, nome: 'Shampoo Pós-Corte', preco: 50.00, categoria: 'Produtos de Cabelo', imgPath: './img/produto_shampoo.jpg' },
+                { id: 4, nome: 'Pigmentação (cor preta)', preco: 15.00, duracao: '10 min', icon: '🎨', group: 'Química e Cor' },
+                { id: 5, nome: 'Barba Pigmentada', preco: 30.00, duracao: '10 min', icon: '✨', group: 'Química e Cor' },
+                { id: 6, nome: 'Cavanhaque Pigmentado', preco: 25.00, duracao: '10 min', icon: '✨', group: 'Química e Cor' },
+                { id: 8, nome: 'Platinado', preco: 80.00, duracao: ' apartir', icon: '⭐', group: 'Química e Cor' },
+                { id: 9, nome: 'Luzes/reflexo', preco: 70.00, duracao: 'apartir', icon: '⭐', group: 'Química e Cor' },
+                { id: 13, nome: 'Listrinha', preco: 5.00, duracao: '5 min', icon: '⭐', group: 'Química e Cor' },
+            ],
+            // PRODUTOS ATUALIZADOS COM SUBCATEGORIAS EM TIMES, PERFUMES E CABELO
+            produtos: [
+                // Camisas - Europeias (5 itens)
+                { id: 101, nome: 'Camisa Europeia 01 - Clássica', preco: 120.00, categoria: 'Camisas de Times', subcategoria: 'Camisas Europeias', imgPath: './img/camisa_eu_01.jpg' },
+                { id: 102, nome: 'Camisa Europeia 02 - Atual Home', preco: 150.00, categoria: 'Camisas de Times', subcategoria: 'Camisas Europeias', imgPath: './img/camisa_eu_02.jpg' },
+                { id: 103, nome: 'Camisa Europeia 03 - Retrô Anos 90', preco: 180.00, categoria: 'Camisas de Times', subcategoria: 'Camisas Europeias', imgPath: './img/camisa_eu_03.jpg' },
+                { id: 104, nome: 'Camisa Europeia 04 - Treino', preco: 90.00, categoria: 'Camisas de Times', subcategoria: 'Camisas Europeias', imgPath: './img/camisa_eu_04.jpg' },
+                { id: 105, nome: 'Camisa Europeia 05 - Goleiro', preco: 130.00, categoria: 'Camisas de Times', subcategoria: 'Camisas Europeias', imgPath: './img/camisa_eu_05.jpg' },
+
+                // Camisas - Brasileiro (5 itens)
+                { id: 106, nome: 'Camisa Brasileiro 01 - Listrada', preco: 110.00, categoria: 'Camisas de Times', subcategoria: 'Brasileiro', imgPath: './img/camisa_br_01.jpg' },
+                { id: 107, nome: 'Camisa Brasileiro 02 - Edição Especial', preco: 160.00, categoria: 'Camisas de Times', subcategoria: 'Brasileiro', imgPath: './img/camisa_br_02.jpg' },
+                { id: 108, nome: 'Camisa Brasileiro 03 - Torcedor', preco: 85.00, categoria: 'Camisas de Times', subcategoria: 'Brasileiro', imgPath: './img/camisa_br_03.jpg' },
+                { id: 109, nome: 'Camisa Brasileiro 04 - Viagem', preco: 100.00, categoria: 'Camisas de Times', subcategoria: 'Brasileiro', imgPath: './img/camisa_br_04.jpg' },
+                { id: 110, nome: 'Camisa Brasileiro 05 - Home 2024', preco: 140.00, categoria: 'Camisas de Times', subcategoria: 'Brasileiro', imgPath: './img/camisa_br_05.jpg' },
+
+                // Camisas - Basquete (5 itens)
+                { id: 111, nome: 'Camisa Basquete 01 - NBA Jordan', preco: 170.00, categoria: 'Camisas de Times', subcategoria: 'Basquete', imgPath: './img/camisa_basket_01.jpg' },
+                { id: 112, nome: 'Camisa Basquete 02 - Time Laranja', preco: 150.00, categoria: 'Camisas de Times', subcategoria: 'Basquete', imgPath: './img/camisa_basket_02.jpg' },
+                { id: 113, nome: 'Camisa Basquete 03 - Regata Azul', preco: 130.00, categoria: 'Camisas de Times', subcategoria: 'Basquete', imgPath: './img/camisa_basket_03.jpg' },
+                { id: 114, nome: 'Camisa Basquete 04 - Retrô P&B', preco: 180.00, categoria: 'Camisas de Times', subcategoria: 'Basquete', imgPath: './img/camisa_basket_04.jpg' },
+                { id: 115, nome: 'Camisa Basquete 05 - Edição Urbana', preco: 160.00, categoria: 'Camisas de Times', subcategoria: 'Basquete', imgPath: './img/camisa_basket_05.jpg' },
+                
+                // Perfumes - Árabes (9 itens)
+                { id: 201, nome: 'Perfume Árabe 01 - Oud Supreme', preco: 110.00, categoria: 'Perfumes', subcategoria: 'Árabes', imgPath: './img/arabe1.jpg' },
+                { id: 202, nome: 'Perfume Árabe 02 - Desert Night', preco: 125.00, categoria: 'Perfumes', subcategoria: 'Árabes', imgPath: './img/arabe2.jpg' },
+
+                // Perfumes - Importados (9 itens)
+                { id: 210, nome: 'Perfume Importado 01 - Aqua Sport', preco: 250.00, categoria: 'Perfumes', subcategoria: 'Importados', imgPath: './img/importado1.jpg' },
+                { id: 211, nome: 'Perfume Importado 02 - Dark Noir', preco: 320.00, categoria: 'Perfumes', subcategoria: 'Importados', imgPath: './img/importado2.jpg' },
+                { id: 212, nome: 'Perfume Importado 03 - Vanilla Dream', preco: 280.00, categoria: 'Perfumes', subcategoria: 'Importados', imgPath: './img/importado3.jpg' },
+
+                // Perfumes - Oboticario (9 itens)
+                { id: 219, nome: 'Boticário 01 - Malbec Tradicional', preco: 149.90, categoria: 'Perfumes', subcategoria: 'Oboticario', imgPath: './img/oboticario1.jpg' },
+                { id: 220, nome: 'Boticário 02 - Egeo Dolce', preco: 129.90, categoria: 'Perfumes', subcategoria: 'Oboticario', imgPath: './img/oboticario2.jpg' },
+                { id: 221, nome: 'Boticário 03 - Quasar Fire', preco: 159.90, categoria: 'Perfumes', subcategoria: 'Oboticario', imgPath: './img/oboticario3.jpg' },
+                { id: 222, nome: 'Boticário 04 - Zaad Expedition', preco: 219.90, categoria: 'Perfumes', subcategoria: 'Oboticario', imgPath: './img/oboticario4.jpg' },
+                { id: 223, nome: 'Boticário 05 - Coffee Man', preco: 139.90, categoria: 'Perfumes', subcategoria: 'Oboticario', imgPath: './img/oboticario5.jpg' },
+                { id: 224, nome: 'Boticário 06 - Lily EDP', preco: 259.90, categoria: 'Perfumes', subcategoria: 'Oboticario', imgPath: './img/oboticario6.jpg' },
+
+                // Perfumes - Eudora (9 itens)
+                { id: 228, nome: 'Eudora 01 - Club 6 Voyage', preco: 139.00, categoria: 'Perfumes', subcategoria: 'Eudora', imgPath: './img/eudora1.jpg' },
+                { id: 229, nome: 'Eudora 02 - H Acqua', preco: 119.00, categoria: 'Perfumes', subcategoria: 'Eudora', imgPath: './img/eudora2.jpg' },
+                { id: 230, nome: 'Eudora 03 - Impression', preco: 189.00, categoria: 'Perfumes', subcategoria: 'Eudora', imgPath: './img/eudora3.jpg' },
+
+                // Perfumes - Natura (9 itens)
+                { id: 237, nome: 'Natura 01 - Kaiak Clássico', preco: 110.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura1.jpg' },
+                { id: 238, nome: 'Natura 02 - Essencial Oud', preco: 220.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura2.jpg' },
+                { id: 239, nome: 'Natura 03 - Homem Cor.Agio', preco: 180.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura3.jpg' },
+                { id: 240, nome: 'Natura 04 - Luna Radiante', preco: 130.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura4.jpg' },
+                { id: 241, nome: 'Natura 05 - Biografia Assinatura', preco: 150.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura5.jpg' },
+                { id: 242, nome: 'Natura 06 - Ekos Flor do Luar', preco: 140.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura6.jpg' },
+                { id: 243, nome: 'Natura 07 - Urbano Recria', preco: 95.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura7.jpg' },
+                { id: 244, nome: 'Natura 08 - Sr N Tradicional', preco: 79.90, categoria: 'Perfumes', subcategoria: 'Natura', imgPath: './img/natura8.jpg' },
+
+                // Perfumes - Jequiti (9 itens)
+                { id: 246, nome: 'Jequiti 01 - Fábio Jr', preco: 129.00, categoria: 'Perfumes', subcategoria: 'Jequiti', imgPath: './img/jequiti1.jpg' },
+
+
+                // Produtos de Cabelo (Reclassificados em 3 subcategorias)
+                { id: 301, nome: 'Gel Super Cola Black', preco: 25.00, categoria: 'Produtos de Cabelo', subcategoria: 'Gel Super Cola Black', imgPath: './img/gelblack.jpg' },
+                { id: 302, nome: 'Pomada Black Efeito Seco', preco: 35.00, categoria: 'Produtos de Cabelo', subcategoria: 'Pomadas e Gel Black', imgPath: './img/pomadablack.jpg' },
+                { id: 303, nome: 'Cera Modeladora Black', preco: 40.00, categoria: 'Produtos de Cabelo', subcategoria: 'Pomadas e Gel Black', imgPath: './img/produto_cera_black_01.jpg' },
+                
+                { id: 304, nome: 'Pomada Efeito Matte (White)', preco: 30.00, categoria: 'Produtos de Cabelo', subcategoria: 'Pomadas e Gel White', imgPath: './img/produto_pomada_white_01.jpg' },
+                { id: 305, nome: 'Gel Fixador Ultra (White)', preco: 20.00, categoria: 'Produtos de Cabelo', subcategoria: 'Pomadas e Gel White', imgPath: './img/produto_gel_white_01.jpg' },
+                { id: 306, nome: 'Creme de Pentear (White)', preco: 28.00, categoria: 'Produtos de Cabelo', subcategoria: 'Pomadas e Gel White', imgPath: './img/produto_creme_white_01.jpg' },
+
+                { id: 307, nome: 'Minoxidil Crescimento', preco: 85.00, categoria: 'Produtos de Cabelo', subcategoria: 'Outros', imgPath: './img/produto_minoxidil.jpg' },
+                { id: 308, nome: 'Shampoo Pós-Corte', preco: 50.00, categoria: 'Produtos de Cabelo', subcategoria: 'Outros', imgPath: './img/produto_shampoo.jpg' },
+                { id: 309, nome: 'Tônico Capilar', preco: 60.00, categoria: 'Produtos de Cabelo', subcategoria: 'Outros', imgPath: './img/produto_tonico.jpg' },
             ]
         };
     </script>
@@ -303,8 +390,9 @@
                             className="w-full h-full object-cover" 
                             onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300x200?text=Pimenta+Barber"; }}
                         />
+                        {/* Exibe a subcategoria se for Perfume/Cabelo/Time */}
                         <span className="absolute top-2 right-2 bg-pimenta-detail text-pimenta-dark-text text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                            {produto.categoria}
+                            {produto.subcategoria || produto.categoria}
                         </span>
                     </div>
                     <h3 className="text-xl font-bold text-pimenta-light-text mb-3 text-left min-h-[56px]">{produto.nome}</h3>
@@ -321,7 +409,7 @@
             );
         };
         
-        // NOVO Componente: Card de Categoria
+        // Componente Card de Categoria
         const CategoryCard = ({ title, icon, imagePath, onClick }) => (
             <button 
                 onClick={onClick}
@@ -335,7 +423,7 @@
                         onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300x200?text=Pimenta+Barber"; }}
                     />
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                         <div className="text-5xl text-pimenta-detail group-hover:text-pimenta-accent transition">{icon}</div>
+                           <div className="text-5xl text-pimenta-detail group-hover:text-pimenta-accent transition">{icon}</div>
                     </div>
                 </div>
                 <h3 className="font-bold text-2xl mt-3 text-pimenta-light-text group-hover:text-pimenta-accent">{title}</h3>
@@ -343,27 +431,79 @@
             </button>
         );
 
-        // NOVO Componente: Lista de Produtos por Categoria
-        const ProductList = ({ category, produtos, adicionarAoCarrinho, setActiveProductView }) => {
-            const filteredProducts = produtos.filter(p => p.categoria === category);
+        // Componente para Cards de Subcategoria (Perfume/Cabelo/Times)
+        const SubCategoryCard = ({ title, icon, onClick, isActive }) => (
+            <button 
+                onClick={onClick}
+                className={`p-6 rounded-xl font-bold text-center transition transform hover:scale-105 shadow-lg border-2 
+                    ${isActive 
+                        ? 'bg-pimenta-accent text-pimenta-light-text border-pimenta-detail' 
+                        : 'bg-pimenta-light-bg text-pimenta-detail hover:bg-pimenta-principal border-pimenta-principal hover:border-pimenta-detail'
+                    }`}
+            >
+                <div className="text-4xl mb-2">{icon}</div>
+                <div className="text-lg">{title}</div>
+            </button>
+        );
+
+        // Componente: Lista de Produtos por Categoria 
+        const ProductList = ({ category, subcategory, produtos, adicionarAoCarrinho, setActiveProductView, setActiveSubCategory }) => {
+            const filteredProducts = produtos.filter(p => {
+                // Se subcategory está definido, filtra por categoria principal E subcategoria
+                if (subcategory) {
+                    return p.categoria === category && p.subcategoria === subcategory;
+                }
+                // Caso contrário, filtra apenas pela categoria principal (usado apenas para categorias que não tem subcategoria, mas agora todas tem)
+                return p.categoria === category;
+            });
+
+            // Lógica de "Voltar"
+            const handleBackClick = () => {
+                // Se estamos em uma lista de produtos de subcategoria, voltamos para o menu de subcategorias.
+                if (subcategory) {
+                    setActiveSubCategory(null);
+                } else {
+                    // Se não temos subcategoria (ou estamos voltando do menu de subcategorias), voltamos para o menu principal da loja.
+                    setActiveProductView(null); 
+                }
+            };
 
             return (
                 <div className="fade-in">
                     <button 
-                        onClick={() => setActiveProductView(null)}
+                        onClick={handleBackClick}
                         className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition"
                     >
-                        <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu de Categorias</span>
+                        <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu de {subcategory ? 'Subcategorias' : 'Categorias'}</span>
                     </button>
-                    <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">{category}</h3>
+                    <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">{subcategory || category}</h3>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {filteredProducts.map(produto => (
-                            <ProductCard key={produto.id} produto={produto} adicionarAoCarrinho={adicionarAoCarrinho} />
-                        ))}
-                    </div>
+                    {filteredProducts.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {filteredProducts.map(produto => (
+                                <ProductCard key={produto.id} produto={produto} adicionarAoCarrinho={adicionarAoCarrinho} />
+                            ))}
+                        </div>
+                    ) : (
+                         <div className="text-center p-12 bg-pimenta-principal rounded-xl shadow-inner text-pimenta-detail border border-pimenta-detail">
+                            <span className="text-6xl mb-4 block text-pimenta-accent">😔</span>
+                            <p className="text-xl font-bold text-pimenta-light-text">Nenhum produto encontrado na categoria **{subcategory || category}**.</p>
+                        </div>
+                    )}
                 </div>
             );
+        };
+
+        // Função auxiliar para agrupar serviços
+        const groupServices = (services) => {
+            return services.reduce((acc, service) => {
+                const groupName = service.group || 'Geral';
+                if (!acc[groupName]) {
+                    acc[groupName] = [];
+                }
+                acc[groupName].push(service);
+                return acc;
+            }, {});
         };
 
 
@@ -381,8 +521,13 @@
             const [servicos] = useState(CONFIG_SERVICOS);
             const [produtos] = useState(CONFIG_PRODUTOS); 
             
-            // NOVO ESTADO: Qual tela de produto estamos vendo? (null = Menu)
+            // Estado para a categoria principal selecionada na Loja (Camisas, Perfumes, Cabelo)
             const [activeProductView, setActiveProductView] = useState(null); 
+            // Estado para a subcategoria selecionada (Perfumes, Cabelo, Times)
+            const [activeSubCategory, setActiveSubCategory] = useState(null); 
+
+            // ESTADO PRINCIPAL: Armazena a lista de serviços selecionados na aba 'servicos' ou 'agendar'
+            const [selectedServices, setSelectedServices] = useState([]); 
 
             // Carrinho: Agora armazena objetos { ...produto, quantidade: N }
             const [carrinho, setCarrinho] = useState([]);
@@ -393,7 +538,7 @@
 
             const ALL_SLOTS = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
             
-            const generateFutureDates = () => {
+            const futureDates = (() => {
                 const dates = [];
                 const today = new Date();
                 today.setDate(today.getDate() + 1);
@@ -408,8 +553,7 @@
                     dates.push(`${yyyy}-${mm}-${dd}`);
                 }
                 return dates;
-            };
-            const futureDates = generateFutureDates();
+            })();
 
             useEffect(() => {
                 const loadData = async () => {
@@ -423,10 +567,15 @@
                 loadData();
             }, [isAuthReady, userId]);
 
-            // Resetar a visão da loja ao mudar de aba
+            // LÓGICA DE LIMPEZA AO MUDAR DE ABA
              useEffect(() => {
                 if (activeTab !== 'produtos') {
                     setActiveProductView(null);
+                    setActiveSubCategory(null); 
+                }
+                // Limpa a seleção manual do formulário ao entrar na aba de agendamento/serviços
+                if (activeTab === 'servicos' || activeTab === 'agendar') {
+                    setAgendamentoForm(prev => ({...prev, servico: ''}));
                 }
             }, [activeTab]);
 
@@ -441,17 +590,39 @@
                 return ALL_SLOTS.filter(slot => !bookedTimes.includes(slot));
             }, [agendamentos]);
 
+            // LÓGICA DE SELEÇÃO DE SERVIÇOS (Compartilhada entre 'servicos' e 'agendar')
+            const toggleServiceSelection = (service) => {
+                setSelectedServices(prev => {
+                    const isSelected = prev.some(s => s.nome === service.nome);
+                    if (isSelected) {
+                        return prev.filter(s => s.nome !== service.nome);
+                    } else {
+                        return [...prev, service];
+                    }
+                });
+            };
+            
+            // Função para calcular o preço total dos serviços
+            const calculateTotalServicePrice = () => {
+                return selectedServices.reduce((total, service) => total + service.preco, 0).toFixed(2);
+            };
+
+            // Função para redirecionar para a aba de agendamento
+            const goToAppointment = () => {
+                setActiveTab('agendar');
+            };
+            
+            // --- Lógica de Carrinho (Produtos) ---
+
             const adicionarAoCarrinho = (produto) => {
                 setCarrinho(prevCarrinho => {
                     const existingItemIndex = prevCarrinho.findIndex(item => item.id === produto.id);
 
                     if (existingItemIndex > -1) {
-                        // Se o produto já existe, aumenta a quantidade
                         const updatedCarrinho = [...prevCarrinho];
                         updatedCarrinho[existingItemIndex].quantidade += 1;
                         return updatedCarrinho;
                     } else {
-                        // Se não existe, adiciona com quantidade 1
                         return [...prevCarrinho, { ...produto, quantidade: 1 }];
                     }
                 });
@@ -467,10 +638,8 @@
                     if (existingItemIndex > -1) {
                         const updatedCarrinho = [...prevCarrinho];
                         if (updatedCarrinho[existingItemIndex].quantidade > 1) {
-                            // Diminui a quantidade
                             updatedCarrinho[existingItemIndex].quantidade -= 1;
                         } else {
-                            // Remove o item se a quantidade for 1
                             updatedCarrinho.splice(existingItemIndex, 1);
                         }
                         return updatedCarrinho;
@@ -493,11 +662,7 @@
                 const total = calcularTotal();
                 
                 setMensagemSucesso('⌛ Preparando pedido e abrindo WhatsApp do Barbeiro Diego...');
-                
-                // Envio do pedido via WhatsApp
                 sendWhatsAppOrderNotification(carrinho, total, barbeiros);
-                
-                // Limpa o carrinho
                 setCarrinho([]);
 
                 setTimeout(() => {
@@ -506,25 +671,28 @@
                 setTimeout(() => setMensagemSucesso(''), 5000);
             };
 
+            // --- Lógica de Agendamento ---
 
             const realizarAgendamento = async () => {
+                const serviceToSave = selectedServices.map(s => s.nome).join(' + ');
                 const rawPhone = agendamentoForm.telefone.replace(/\D/g, ''); 
                 
-                if (!agendamentoForm.nome || rawPhone.length < 10 || !agendamentoForm.servico || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario) {
-                    setMensagemSucesso('⚠️ Preencha todos os campos e o telefone corretamente!');
-                    setTimeout(() => setMensagemSucesso(''), 3000);
+                if (!agendamentoForm.nome || rawPhone.length < 10 || selectedServices.length === 0 || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario) {
+                    setMensagemSucesso('⚠️ Preencha todos os campos corretamente! (Selecione pelo menos um serviço)');
+                    setTimeout(() => setMensagemSucesso(''), 4000);
                     return;
                 }
                 
                 const appointmentData = {
                     clientName: agendamentoForm.nome,
                     clientPhone: rawPhone, 
-                    serviceName: servicos.find(s => s.nome === agendamentoForm.servico)?.nome || agendamentoForm.servico,
+                    serviceName: serviceToSave, 
                     barberName: agendamentoForm.barbeiro,
                     date: agendamentoForm.data,
                     time: agendamentoForm.horario,
                     timestamp: new Date().toISOString(),
                     userId: userId,
+                    totalPrice: calculateTotalServicePrice(),
                 };
 
                 setMensagemSucesso('⌛ Tentando agendar... Verificando disponibilidade em tempo real.');
@@ -557,6 +725,7 @@
 
                     setMensagemSucesso('✅ Agendamento realizado com sucesso! Notificação WhatsApp será enviada.');
                     setAgendamentoForm({ nome: '', telefone: '', servico: '', barbeiro: '', data: '', horario: '' });
+                    setSelectedServices([]); // Limpa a seleção após sucesso
                     
                     sendWhatsAppNotification(newAppt, barbeiros);
 
@@ -675,24 +844,133 @@
                     title: 'Camisas de Times', 
                     categoryName: 'Camisas de Times', 
                     icon: '⚽',
-                    imagePath: './img/camisa_atual.jpg' // Imagem representativa
+                    imagePath: './img/camisa_eu_02.jpg' 
                 },
                 { 
                     title: 'Perfumes', 
                     categoryName: 'Perfumes', 
                     icon: '💧',
-                    imagePath: './img/perfume_ocean.jpg' // Imagem representativa
+                    imagePath: './img/perfume_ocean.jpg' 
                 },
                 { 
                     title: 'Produtos de Cabelo', 
                     categoryName: 'Produtos de Cabelo', 
                     icon: '🧴',
-                    imagePath: './img/produto_pomada.jpg' // Imagem representativa
+                    imagePath: './img/produto_pomada.jpg' 
                 }
             ];
 
+            // Categorias de Perfumes (Subcategorias)
+            const PERFUME_CATEGORIES = [
+                { name: 'Árabes', icon: '🕌', imagePath: './img/perfume_arabe_01.jpg' },
+                { name: 'Importados', icon: '🌎', imagePath: './img/perfume_importado_01.jpg' },
+                { name: 'Oboticario', icon: '🇧🇷', imagePath: './img/perfume_boti_01.jpg' },
+                { name: 'Eudora', icon: '💜', imagePath: './img/perfume_eudora_01.jpg' },
+                { name: 'Natura', icon: '🌿', imagePath: './img/perfume_natura_01.jpg' },
+                { name: 'Jequiti', icon: '✨', imagePath: './img/perfume_jequiti_01.jpg' },
+            ];
+            
+            // Categorias de Produtos de Cabelo (Subcategorias)
+            const HAIR_CATEGORIES = [
+                { name: 'Pomadas e Gel Black', icon: '🌑', imagePath: './img/produto_gel_black_01.jpg' },
+                { name: 'Pomadas e Gel White', icon: '⚪', imagePath: './img/produto_pomada_white_01.jpg' },
+                { name: 'Outros', icon: '🧪', imagePath: './img/produto_minoxidil.jpg' },
+            ];
+            
+            // Categorias de Camisas de Times (Subcategorias)
+            const TEAMS_CATEGORIES = [
+                { name: 'Camisas Europeias', icon: '🇪🇺', imagePath: './img/camisa_eu_01.jpg' },
+                { name: 'Brasileiro', icon: '🇧🇷', imagePath: './img/camisa_br_01.jpg' },
+                { name: 'Basquete', icon: '🏀', imagePath: './img/camisa_basket_01.jpg' },
+            ];
+
+
             // Renderização da aba de Produtos (Loja)
             const ProductShop = () => {
+
+                const handleSubCategoryClick = (category, subcategoryName) => {
+                    setActiveProductView(category);
+                    setActiveSubCategory(subcategoryName);
+                };
+
+                const handleBackToMainMenu = () => {
+                    setActiveProductView(null);
+                    setActiveSubCategory(null);
+                };
+
+                let content;
+
+                if (activeProductView === 'Camisas de Times' && activeSubCategory) {
+                    content = (
+                        <ProductList
+                            category="Camisas de Times" subcategory={activeSubCategory} produtos={produtos} adicionarAoCarrinho={adicionarAoCarrinho}
+                            setActiveProductView={setActiveProductView} setActiveSubCategory={setActiveSubCategory}
+                        />
+                    );
+                } else if (activeProductView === 'Perfumes' && activeSubCategory) {
+                    content = (
+                        <ProductList
+                            category="Perfumes" subcategory={activeSubCategory} produtos={produtos} adicionarAoCarrinho={adicionarAoCarrinho}
+                            setActiveProductView={setActiveProductView} setActiveSubCategory={setActiveSubCategory}
+                        />
+                    );
+                } else if (activeProductView === 'Produtos de Cabelo' && activeSubCategory) {
+                    content = (
+                        <ProductList
+                            category="Produtos de Cabelo" subcategory={activeSubCategory} produtos={produtos} adicionarAoCarrinho={adicionarAoCarrinho}
+                            setActiveProductView={setActiveProductView} setActiveSubCategory={setActiveSubCategory}
+                        />
+                    );
+                } else if (activeProductView === 'Camisas de Times' && activeSubCategory === null) {
+                    content = (
+                         <div className="fade-in">
+                            <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
+                                <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
+                            </button>
+                            <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">⚽ CAMISAS DE TIMES</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {TEAMS_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Camisas de Times', cat.name)} />))}
+                            </div>
+                         </div>
+                    );
+
+                } else if (activeProductView === 'Perfumes' && activeSubCategory === null) {
+                    content = (
+                         <div className="fade-in">
+                            <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
+                                <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
+                            </button>
+                            <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">💧 MENU DE PERFUMES</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                {PERFUME_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Perfumes', cat.name)} />))}
+                            </div>
+                         </div>
+                    );
+
+                } else if (activeProductView === 'Produtos de Cabelo' && activeSubCategory === null) {
+                    content = (
+                         <div className="fade-in">
+                            <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
+                                <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
+                            </button>
+                            <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">🧴 PRODUTOS PARA CABELO</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {HAIR_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Produtos de Cabelo', cat.name)} />))}
+                            </div>
+                         </div>
+                    );
+
+                } else {
+                    // Visão inicial da loja
+                    content = (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
+                            {CATEGORIES.map(category => (
+                                <CategoryCard key={category.categoryName} title={category.title} icon={category.icon} imagePath={category.imagePath} onClick={() => { setActiveProductView(category.categoryName); setActiveSubCategory(null);}} />
+                            ))}
+                        </div>
+                    );
+                }
+
                 return (
                     <div className="p-6 max-w-6xl mx-auto fade-in">
                         <h2 className="text-4xl font-bold text-center mb-12 text-pimenta-light-text tracking-wider">
@@ -714,30 +992,9 @@
                             </div>
                         )}
 
-                        {activeProductView ? (
-                            // Tela de lista de produtos da categoria selecionada
-                            <ProductList 
-                                category={activeProductView} 
-                                produtos={produtos} 
-                                adicionarAoCarrinho={adicionarAoCarrinho} 
-                                setActiveProductView={setActiveProductView} 
-                            />
-                        ) : (
-                            // Menu principal de Categorias
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
-                                {CATEGORIES.map(category => (
-                                    <CategoryCard 
-                                        key={category.categoryName}
-                                        title={category.title}
-                                        icon={category.icon}
-                                        imagePath={category.imagePath}
-                                        onClick={() => setActiveProductView(category.categoryName)}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                        {content}
                         
-                        {/* Exibir Carrinho Detalhado SOMENTE quando estiver na tela principal do menu ou em uma lista de produtos */}
+                        {/* Exibir Carrinho Detalhado */}
                         {carrinho.length > 0 && (
                             <div className="mt-12 bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl border-2 border-pimenta-detail">
                                 <h3 className="text-3xl font-bold mb-6 text-pimenta-accent">🛒 CARRINHO DE COMPRAS</h3>
@@ -776,6 +1033,9 @@
                 );
             };
             
+            // Agrupa os serviços antes da renderização da aba 'servicos'
+            const groupedServices = groupServices(servicos);
+
             return (
                 <div className="min-h-screen bg-pimenta-principal">
                     <nav className="bg-pimenta text-pimenta-light-text p-4 sticky top-0 z-50 shadow-2xl border-b-2 border-pimenta-detail">
@@ -812,7 +1072,7 @@
                         </div>
                     )}
 
-                    <div className="pb-20">
+                    <div className="pb-8">
                         {activeTab === 'home' && (
                             <div className="min-h-screen bg-pimenta-principal fade-in">
                                 <div className="bg-pimenta text-pimenta-light-text p-12 text-center relative overflow-hidden shadow-inner shadow-pimenta-detail/10">
@@ -828,7 +1088,7 @@
                                             ESTILO • ATITUDE • PIMENTA 🌶️
                                         </p>
                                         <button
-                                            onClick={() => setActiveTab('agendar')}
+                                            onClick={() => goToAppointment()} 
                                             className="bg-pimenta-accent hover:bg-pimenta-secondary-accent text-pimenta-light-text px-10 py-4 rounded-full font-bold text-xl transition transform hover:scale-105 shadow-2xl border-2 border-pimenta-detail"
                                         >
                                             📅 AGENDAR AGORA
@@ -838,21 +1098,33 @@
 
                                 <div className="p-6 max-w-6xl mx-auto">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                                        <div className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105">
-                                            <div className="text-5xl mb-4 text-pimenta-accent">✂️</div>
-                                            <h3 className="font-bold text-2xl mb-3 text-pimenta-light-text">CORTES MODERNOS</h3>
-                                            <p className="text-pimenta-detail text-lg">Diversos estilos e técnicas profissionais</p>
-                                        </div>
-                                        <div className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105">
-                                            <div className="text-5xl mb-4 text-pimenta-accent">📱</div>
-                                            <h3 className="font-bold text-2xl mb-3 text-pimenta-light-text">AGENDAMENTO ONLINE</h3>
-                                            <p className="text-pimenta-detail text-lg">Marque seu horário direto pelo site</p>
-                                        </div>
-                                        <div className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105">
-                                            <div className="text-5xl mb-4 text-pimenta-accent">🛍️</div>
-                                            <h3 className="font-bold text-2xl mb-3 text-pimenta-light-text">PRODUTOS PREMIUM</h3>
-                                            <p className="text-pimenta-detail text-lg">Camisas, perfumes e cosméticos</p>
-                                        </div>
+                                        {/* CARD: CORTES MODERNOS -> AGENDAR (SERVIÇOS) */}
+                                        <button onClick={() => setActiveTab('servicos')} className="w-full text-left">
+                                            <div className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105 group">
+                                                <div className="text-5xl mb-4 text-pimenta-accent group-hover:animate-bounce">✂️</div>
+                                                <h3 className="font-bold text-2xl mb-3 text-pimenta-light-text group-hover:text-pimenta-accent">CORTES MODERNOS</h3>
+                                                <p className="text-pimenta-detail text-lg">Diversos estilos e técnicas profissionais</p>
+                                                <p className="mt-2 text-pimenta-accent font-bold">CLIQUE PARA VER OS SERVIÇOS</p>
+                                            </div>
+                                        </button>
+                                        {/* CARD: AGENDAMENTO ONLINE -> AGENDAR */}
+                                        <button onClick={() => goToAppointment()} className="w-full text-left">
+                                            <div className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105 group">
+                                                <div className="text-5xl mb-4 text-pimenta-accent group-hover:animate-bounce">📱</div>
+                                                <h3 className="font-bold text-2xl mb-3 text-pimenta-light-text group-hover:text-pimenta-accent">AGENDAMENTO ONLINE</h3>
+                                                <p className="text-pimenta-detail text-lg">Marque seu horário direto pelo site</p>
+                                                <p className="mt-2 text-pimenta-accent font-bold">CLIQUE PARA AGENDAR</p>
+                                            </div>
+                                        </button>
+                                        {/* CARD: PRODUTOS PREMIUM -> PRODUTOS (LOJA) */}
+                                        <button onClick={() => setActiveTab('produtos')} className="w-full text-left">
+                                            <div className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl text-center border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105 group">
+                                                <div className="text-5xl mb-4 text-pimenta-accent group-hover:animate-bounce">🛍️</div>
+                                                <h3 className="font-bold text-2xl mb-3 text-pimenta-light-text group-hover:text-pimenta-accent">PRODUTOS PREMIUM</h3>
+                                                <p className="text-pimenta-detail text-lg">Camisas, perfumes e cosméticos</p>
+                                                <p className="mt-2 text-pimenta-accent font-bold">CLIQUE PARA VER A LOJA</p>
+                                            </div>
+                                        </button>
                                     </div>
 
                                     <div className="bg-pimenta-light-bg text-pimenta-light-text p-8 rounded-2xl shadow-2xl border-2 border-pimenta-detail">
@@ -875,25 +1147,63 @@
                         {activeTab === 'servicos' && (
                             <div className="p-6 max-w-6xl mx-auto fade-in">
                                 <h2 className="text-4xl font-bold text-center mb-12 text-pimenta-light-text tracking-wider">
-                                    💈 NOSSOS SERVIÇOS
+                                    💈 SELECIONE SEUS SERVIÇOS
                                 </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {servicos.map(servico => (
-                                        <div key={servico.id} className="bg-pimenta-light-bg p-8 rounded-2xl shadow-2xl border-2 border-pimenta-detail hover:border-pimenta-accent transition transform hover:scale-105">
-                                            <div className="flex items-center gap-4 mb-4">
-                                                <span className="text-5xl text-pimenta-accent">{servico.icon}</span>
-                                                <div className="flex-1">
-                                                    <h3 className="text-2xl font-bold text-pimenta-light-text mb-1">{servico.nome}</h3>
-                                                    <p className="text-pimenta-detail flex items-center gap-2 text-lg">
-                                                        ⏱️ {servico.duracao}
-                                                    </p>
-                                                </div>
-                                                <span className="bg-pimenta-secondary-accent text-pimenta-dark-text px-5 py-3 rounded-full font-bold text-xl shadow-lg">
-                                                    R$ {servico.preco.toFixed(2)}
-                                                </span>
+                                
+                                <div className="space-y-4">
+                                    {Object.keys(groupedServices).map(groupName => (
+                                        <details key={groupName} className="service-details bg-pimenta-light-bg rounded-2xl shadow-xl overflow-hidden" open>
+                                            <summary className="flex justify-between items-center text-pimenta-light-text font-extrabold text-2xl">
+                                                {groupName}
+                                            </summary>
+                                            <div className="service-content grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {groupedServices[groupName].map(servico => {
+                                                    const isSelected = selectedServices.some(s => s.nome === servico.nome);
+                                                    return (
+                                                        <button
+                                                            key={servico.nome}
+                                                            onClick={() => toggleServiceSelection(servico)}
+                                                            className={`p-4 rounded-xl shadow-lg border-2 transition transform hover:scale-[1.02] text-left flex flex-col justify-between
+                                                                ${isSelected 
+                                                                    ? 'bg-pimenta-accent border-pimenta-detail' 
+                                                                    : 'bg-pimenta-principal border-pimenta-principal hover:border-pimenta-detail'}`}
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-3xl">{servico.icon}</span>
+                                                                <div className="flex-1">
+                                                                    <h3 className="text-xl font-bold text-pimenta-light-text mb-1">{servico.nome}</h3>
+                                                                    <p className="text-pimenta-detail text-sm">⏱️ {servico.duracao}</p>
+                                                                </div>
+                                                                <span className={`${isSelected ? 'bg-pimenta-light-text text-pimenta-accent' : 'bg-pimenta-secondary-accent text-pimenta-dark-text'} px-3 py-1 rounded-full font-bold text-md shadow-lg`}>
+                                                                    R$ {servico.preco.toFixed(2)}
+                                                                </span>
+                                                            </div>
+                                                            <div className="text-right font-bold text-xs mt-2 text-pimenta-detail">
+                                                                {isSelected ? '✓ SELECIONADO' : 'CLIQUE PARA ADICIONAR'}
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
-                                        </div>
+                                        </details>
                                     ))}
+                                </div>
+
+                                {/* BOTÃO DE AÇÃO PARA AGENDAMENTO */}
+                                <div className="mt-12 text-center">
+                                    <h3 className="text-2xl font-bold mb-4 text-pimenta-light-text">
+                                        Total Selecionado: <span className="text-pimenta-accent">R$ {calculateTotalServicePrice()}</span>
+                                    </h3>
+                                    <button
+                                        onClick={goToAppointment}
+                                        disabled={selectedServices.length === 0}
+                                        className={`px-10 py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl border-2 border-pimenta-detail
+                                            ${selectedServices.length === 0 
+                                                ? 'bg-pimenta-detail/50 text-pimenta-light-text cursor-not-allowed' 
+                                                : 'bg-pimenta-accent hover:bg-pimenta-secondary-accent text-pimenta-light-text'}`}
+                                    >
+                                        📅 CONTINUAR PARA AGENDAMENTO ({selectedServices.length} Serviços)
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -931,19 +1241,53 @@
                                                 />
                                             </div>
 
+                                            {/* CAMPO DE SERVIÇO ATUALIZADO PARA SELEÇÃO MÚLTIPLA COM AGRUPAMENTO */}
                                             <div>
-                                                <label className="block font-bold mb-3 text-pimenta-light-text text-lg">SERVIÇO</label>
-                                                <select
-                                                    value={agendamentoForm.servico}
-                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, servico: e.target.value})}
-                                                    className="w-full p-4 border-2 border-pimenta-detail bg-pimenta-principal text-pimenta-light-text rounded-xl focus:border-pimenta-accent outline-none text-lg"
-                                                >
-                                                    <option value="" className="bg-pimenta-principal">Selecione um serviço</option>
-                                                    {servicos.map(s => (
-                                                        <option key={s.id} value={s.nome} className="bg-pimenta-principal">{s.icon} {s.nome} - R$ {s.preco.toFixed(2)}</option>
+                                                <label className="block font-bold mb-3 text-pimenta-light-text text-lg">SERVIÇO(S) SELECIONADO(S)</label>
+                                                
+                                                <div className="space-y-3 bg-pimenta-principal p-4 rounded-xl border-2 border-pimenta-detail">
+                                                    {Object.keys(groupedServices).map(groupName => (
+                                                        <details key={groupName} className="service-details-compact" open>
+                                                            <summary className="flex justify-between items-center text-pimenta-light-text font-bold text-lg cursor-pointer py-2 border-b border-pimenta-light-bg/50">
+                                                                <span className="text-pimenta-detail">▶</span> {groupName}
+                                                            </summary>
+                                                            <div className="space-y-2 pt-2">
+                                                                {groupedServices[groupName].map(servico => {
+                                                                    const isSelected = selectedServices.some(s => s.nome === servico.nome);
+                                                                    return (
+                                                                        <button
+                                                                            key={servico.nome}
+                                                                            type="button"
+                                                                            onClick={() => toggleServiceSelection(servico)}
+                                                                            className={`w-full py-2 px-3 rounded-lg font-bold text-left transition flex justify-between items-center text-sm
+                                                                                ${isSelected 
+                                                                                    ? 'bg-pimenta-accent text-pimenta-light-text shadow-sm' 
+                                                                                    : 'bg-pimenta-light-bg/50 text-pimenta-light-text hover:bg-pimenta-light-bg'}`}
+                                                                        >
+                                                                            <span>{servico.icon} {servico.nome}</span>
+                                                                            <span className={`font-extrabold text-md ${isSelected ? 'text-pimenta-light-text' : 'text-pimenta-secondary-accent'}`}>R$ {servico.preco.toFixed(2)}</span>
+                                                                        </button>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </details>
                                                     ))}
-                                                </select>
+
+                                                    {/* Resumo do Total */}
+                                                    {selectedServices.length > 0 ? (
+                                                        <div className="mt-4 pt-3 border-t border-pimenta-detail/50 text-right">
+                                                            <p className="font-bold text-xl text-pimenta-accent">
+                                                                TOTAL: R$ {calculateTotalServicePrice()}
+                                                            </p>
+                                                            <p className="text-sm text-pimenta-detail">({selectedServices.length} itens selecionados)</p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-center text-pimenta-detail/70 pt-2 text-sm font-bold">Selecione um ou mais serviços para continuar.</p>
+                                                    )}
+                                                </div>
                                             </div>
+                                            {/* FIM CAMPO DE SERVIÇO ATUALIZADO */}
+
 
                                             <div>
                                                 <label className="block font-bold mb-3 text-pimenta-light-text text-lg">BARBEIRO</label>
@@ -990,19 +1334,22 @@
                                                     </label>
                                                     <div className="grid grid-cols-3 gap-3">
                                                         {getAvailableSlots(agendamentoForm.data, agendamentoForm.barbeiro).length > 0 ? (
-                                                            getAvailableSlots(agendamentoForm.data, agendamentoForm.barbeiro).map(horario => (
-                                                                <button
-                                                                    key={horario}
-                                                                    onClick={() => setAgendamentoForm({...agendamentoForm, horario})}
-                                                                    className={`p-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${
-                                                                        agendamentoForm.horario === horario
-                                                                            ? 'bg-pimenta-accent text-pimenta-light-text shadow-lg shadow-pimenta-accent/50'
-                                                                            : 'bg-pimenta-principal text-pimenta-detail hover:bg-pimenta-light-bg border-2 border-pimenta-detail'
-                                                                    }`}
-                                                                >
-                                                                    {horario}
-                                                                </button>
-                                                            ))
+                                                            <div className="col-span-3 grid grid-cols-3 gap-3">
+                                                                {getAvailableSlots(agendamentoForm.data, agendamentoForm.barbeiro).map(horario => (
+                                                                    <button
+                                                                        key={horario}
+                                                                        type="button"
+                                                                        onClick={() => setAgendamentoForm({...agendamentoForm, horario})}
+                                                                        className={`p-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${
+                                                                            agendamentoForm.horario === horario
+                                                                                ? 'bg-pimenta-accent text-pimenta-light-text shadow-lg shadow-pimenta-accent/50'
+                                                                                : 'bg-pimenta-principal text-pimenta-detail hover:bg-pimenta-light-bg border-2 border-pimenta-detail'
+                                                                        }`}
+                                                                    >
+                                                                        {horario}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
                                                         ) : (
                                                             <p className="text-pimenta-detail col-span-3 text-center p-4 bg-pimenta-principal rounded-xl border border-pimenta-detail">
                                                                 😔 Nenhum horário disponível com {agendamentoForm.barbeiro} nesta data. Tente outro dia!
@@ -1022,9 +1369,10 @@
 
                                             <button
                                                 onClick={realizarAgendamento}
-                                                disabled={!agendamentoForm.nome || agendamentoForm.telefone.replace(/\D/g, '').length < 10 || !agendamentoForm.servico || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario}
+                                                // A validação agora checa se há serviços selecionados
+                                                disabled={!agendamentoForm.nome || agendamentoForm.telefone.replace(/\D/g, '').length < 10 || selectedServices.length === 0 || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario}
                                                 className={`w-full py-5 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-2xl mt-8 
-                                                    ${(!agendamentoForm.nome || agendamentoForm.telefone.replace(/\D/g, '').length < 10 || !agendamentoForm.servico || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario)
+                                                    ${(!agendamentoForm.nome || agendamentoForm.telefone.replace(/\D/g, '').length < 10 || selectedServices.length === 0 || !agendamentoForm.barbeiro || !agendamentoForm.data || !agendamentoForm.horario)
                                                         ? 'bg-pimenta-detail/50 text-pimenta-light-text cursor-not-allowed'
                                                         : 'bg-pimenta-accent hover:bg-pimenta-secondary-accent text-pimenta-light-text'
                                                     }`}
@@ -1042,28 +1390,7 @@
                         )}
                     </div>
 
-                    <div className="fixed bottom-0 left-0 right-0 bg-pimenta-principal shadow-2xl border-t-2 border-pimenta-detail md:hidden">
-                        <div className="flex justify-around p-2">
-                            {[
-                                { id: 'home', icon: '🏠', label: 'Início' },
-                                { id: 'servicos', icon: '💈', label: 'Serviços' },
-                                { id: 'produtos', icon: '🛍️', label: 'Loja' },
-                                { id: 'agendar', icon: '📅', label: 'Agendar' },
-                                { id: 'meus-agendamentos', icon: '📝', label: 'Meus Ag.' }
-                            ].map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex flex-col items-center p-2 rounded-lg transition ${
-                                        activeTab === tab.id ? 'text-pimenta-accent bg-pimenta-light-bg' : 'text-pimenta-detail'
-                                    }`}
-                                >
-                                    <span className="text-2xl">{tab.icon}</span>
-                                    <span className="text-xs font-bold mt-1">{tab.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    {/* BARRA DE NAVEGAÇÃO INFERIOR REMOVIDA */}
                 </div>
             );
         };
@@ -1072,5 +1399,3 @@
     </script>
 </body>
 </html>
-
-
