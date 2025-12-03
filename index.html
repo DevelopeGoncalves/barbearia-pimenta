@@ -88,11 +88,11 @@
                     },
                     colors: {
                         'pimenta-principal': '#1a1a1a',      /* Preto/Cinza Escuro (Fundo Principal) */
-                        'pimenta-light-bg': '#2c2c2c',       /* Fundo de Cards (Um pouco mais claro que o principal) */
-                        'pimenta-accent': '#FF4444',         /* Vermelho/Coral Vibrante (ACENTO PRINCIPAL - Botões) */
-                        'pimenta-detail': '#B8D94C',         /* Verde Limão (Detalhes/Bordas - Fiel à Logo) */
-                        'pimenta-dark-text': '#1a1a1a',      /* Usado para texto escuro (em fundos claros) */
-                        'pimenta-light-text': '#F5E6D3',     /* Bege/Creme (Texto Claro) */
+                        'pimenta-light-bg': '#2c2c2c',      /* Fundo de Cards (Um pouco mais claro que o principal) */
+                        'pimenta-accent': '#FF4444',        /* Vermelho/Coral Vibrante (ACENTO PRINCIPAL - Botões) */
+                        'pimenta-detail': '#B8D94C',        /* Verde Limão (Detalhes/Bordas - Fiel à Logo) */
+                        'pimenta-dark-text': '#1a1a1a',     /* Usado para texto escuro (em fundos claros) */
+                        'pimenta-light-text': '#F5E6D3',    /* Bege/Creme (Texto Claro) */
                         'pimenta-secondary-accent': '#FFB84D',/* Laranja (Acento Secundário - Preços) */
                     }
                 },
@@ -239,6 +239,14 @@
         const CONFIG_SERVICOS = window.PIMENTA_CONFIG.servicos;
         const CONFIG_PRODUTOS = window.PIMENTA_CONFIG.produtos;
 
+        // --- NOVO MAPA DE INDISPONIBILIDADE POR DIA DA SEMANA (0=Dom, 1=Seg, ..., 6=Sáb) ---
+        const BARBER_UNAVAILABILITY = {
+            'Diego': [0, 1],      // Domingo e Segunda
+            'Junior': [0, 2],     // Domingo e Terça
+            'João': [0, 3]        // Domingo e Quarta
+        };
+
+
         // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
 
         const maskPhoneNumber = (value) => {
@@ -271,6 +279,12 @@
             const appointmentDateTime = new Date(`${dateString}T${timeString}:00`);
             return appointmentDateTime.getTime() > now.getTime() - (60 * 60 * 1000);  
         };
+        
+        const getDayOfWeek = (dateString) => {
+            // dateString no formato YYYY-MM-DD
+            const date = new Date(dateString + 'T12:00:00'); // Garante que a data não mude por fuso horário
+            return date.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+        };
 
         const sendWhatsAppNotification = (appt, barbeiros) => { 
             const barbeiro = barbeiros.find(b => b.nome === appt.barberName);
@@ -279,12 +293,12 @@
             const dataFormatada = new Date(appt.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
             
             const message = `💈 *NOVO AGENDAMENTO PIMENTA BARBER!* 🌶️\n\n` +
-                            `*Barbeiro:* ${appt.barberName}\n` +
-                            `*Cliente:* ${appt.clientName} (${appt.clientPhone})\n` +
-                            `*Serviço:* ${appt.serviceName}\n` +
-                            `*Data:* ${dataFormatada}\n` +
-                            `*Horário:* ${appt.time}\n\n` +
-                            `Aguardando confirmação.`;
+                                `*Barbeiro:* ${appt.barberName}\n` +
+                                `*Cliente:* ${appt.clientName} (${appt.clientPhone})\n` +
+                                `*Serviço:* ${appt.serviceName}\n` +
+                                `*Data:* ${dataFormatada}\n` +
+                                `*Horário:* ${appt.time}\n\n` +
+                                `Aguardando confirmação.`;
             
             const encodedMessage = encodeURIComponent(message);
             const whatsappLink = `https://wa.me/${barbeiro.telefone}?text=${encodedMessage}`;
@@ -308,12 +322,12 @@
             ).join('\n');
 
             const message = `🛍️ *NOVO PEDIDO DE COMPRA - LOJA PIMENTA!* 🌶️\n\n` +
-                            `*Cliente:* ${clientName}\n` +
-                            `*Contato:* ${clientPhone}\n\n` +
-                            `*ITENS DO PEDIDO (${carrinho.reduce((acc, item) => acc + item.quantidade, 0)} itens):*\n` +
-                            `${itemsList}\n\n` +
-                            `*TOTAL:* R$ ${total}\n\n` +
-                            `Favor entrar em contato com o cliente para finalizar a venda e entrega.`;
+                                `*Cliente:* ${clientName}\n` +
+                                `*Contato:* ${clientPhone}\n\n` +
+                                `*ITENS DO PEDIDO (${carrinho.reduce((acc, item) => acc + item.quantidade, 0)} itens):*\n` +
+                                `${itemsList}\n\n` +
+                                `*TOTAL:* R$ ${total}\n\n` +
+                                `Favor entrar em contato com o cliente para finalizar a venda e entrega.`;
             
             const encodedMessage = encodeURIComponent(message);
             const whatsappLink = `https://wa.me/${barbeiroDiego.telefone}?text=${encodedMessage}`;
@@ -426,7 +440,7 @@
                         onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300x200?text=Pimenta+Barber"; }}
                     />
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <div className="text-5xl text-pimenta-detail group-hover:text-pimenta-accent transition">{icon}</div>
+                        <div className="text-5xl text-pimenta-detail group-hover:text-pimenta-accent transition">{icon}</div>
                     </div>
                 </div>
                 <h3 className="font-bold text-2xl mt-3 text-pimenta-light-text group-hover:text-pimenta-accent">{title}</h3>
@@ -498,10 +512,10 @@
                             ))}
                         </div>
                     ) : (
-                             <div className="text-center p-12 bg-pimenta-principal rounded-xl shadow-inner text-pimenta-detail border border-pimenta-detail">
-                                <span className="text-6xl mb-4 block text-pimenta-accent">😔</span>
-                                <p className="text-xl font-bold text-pimenta-light-text">Nenhum produto encontrado na categoria **{subcategory || category}**.</p>
-                            </div>
+                                 <div className="text-center p-12 bg-pimenta-principal rounded-xl shadow-inner text-pimenta-detail border border-pimenta-detail">
+                                     <span className="text-6xl mb-4 block text-pimenta-accent">😔</span>
+                                     <p className="text-xl font-bold text-pimenta-light-text">Nenhum produto encontrado na categoria **{subcategory || category}**.</p>
+                                 </div>
                     )}
                 </div>
             );
@@ -581,7 +595,7 @@
             }, [isAuthReady, userId]);
 
             // LÓGICA DE LIMPEZA AO MUDAR DE ABA
-             useEffect(() => {
+              useEffect(() => {
                 if (activeTab !== 'produtos') {
                     setActiveProductView(null);
                     setActiveSubCategory(null); 
@@ -939,41 +953,41 @@
                     );
                 } else if (activeProductView === 'Camisas de Times' && activeSubCategory === null) {
                     content = (
-                           <div className="fade-in">
-                                <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
-                                    <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
-                                </button>
-                                <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">⚽ CAMISAS DE TIMES</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {TEAMS_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} imagePath={cat.imagePath} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Camisas de Times', cat.name)} />))}
+                               <div className="fade-in">
+                                    <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
+                                        <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
+                                    </button>
+                                    <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">⚽ CAMISAS DE TIMES</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {TEAMS_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} imagePath={cat.imagePath} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Camisas de Times', cat.name)} />))}
+                                    </div>
                                 </div>
-                            </div>
                     );
 
                 } else if (activeProductView === 'Perfumes' && activeSubCategory === null) {
                     content = (
-                           <div className="fade-in">
-                                <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
-                                    <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
-                                </button>
-                                <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">💧 MENU DE PERFUMES</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                    {PERFUME_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} imagePath={cat.imagePath} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Perfumes', cat.name)} />))}
+                               <div className="fade-in">
+                                    <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
+                                        <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
+                                    </button>
+                                    <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">💧 MENU DE PERFUMES</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                        {PERFUME_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} imagePath={cat.imagePath} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Perfumes', cat.name)} />))}
+                                    </div>
                                 </div>
-                            </div>
                     );
 
                 } else if (activeProductView === 'Produtos de Cabelo' && activeSubCategory === null) {
                     content = (
-                           <div className="fade-in">
-                                <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
-                                    <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
-                                </button>
-                                <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">🧴 PRODUTOS PARA CABELO</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {HAIR_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} imagePath={cat.imagePath} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Produtos de Cabelo', cat.name)} />))}
+                               <div className="fade-in">
+                                    <button onClick={handleBackToMainMenu} className="mb-6 flex items-center gap-2 text-pimenta-detail hover:text-pimenta-accent transition">
+                                        <span className="text-xl">←</span> <span className="font-bold">Voltar ao Menu Principal da Loja</span>
+                                    </button>
+                                    <h3 className="text-4xl font-bold mb-8 text-pimenta-accent text-center">🧴 PRODUTOS PARA CABELO</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {HAIR_CATEGORIES.map(cat => (<SubCategoryCard key={cat.name} title={cat.name} icon={cat.icon} imagePath={cat.imagePath} isActive={activeSubCategory === cat.name} onClick={() => handleSubCategoryClick('Produtos de Cabelo', cat.name)} />))}
+                                    </div>
                                 </div>
-                            </div>
                     );
 
                 } else {
@@ -1304,34 +1318,11 @@
                                             </div>
                                             {/* FIM CAMPO DE SERVIÇO ATUALIZADO */}
 
-
-                                            <div>
-                                                <label className="block font-bold mb-3 text-pimenta-light-text text-lg">BARBEIRO</label>
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                    {barbeiros.map(barbeiro => (
-                                                        <button
-                                                            key={barbeiro.id}
-                                                            type="button"
-                                                            onClick={() => setAgendamentoForm({...agendamentoForm, barbeiro: barbeiro.nome, horario: ''})}
-                                                            className={`p-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${
-                                                                agendamentoForm.barbeiro === barbeiro.nome
-                                                                    ? 'bg-pimenta-accent text-pimenta-light-text shadow-lg shadow-pimenta-accent/50 border-2 border-pimenta-detail'
-                                                                    : 'bg-pimenta-principal text-pimenta-detail hover:bg-pimenta-light-bg border-2 border-pimenta-detail'
-                                                            }`}
-                                                        >
-                                                            <div className="text-3xl mb-2 text-pimenta-secondary-accent">{barbeiro.icon}</div>
-                                                            <div className="text-base">{barbeiro.nome}</div>
-                                                            <div className="text-xs text-pimenta-detail mt-1">{barbeiro.especialidade}</div>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-
                                             <div>
                                                 <label className="block font-bold mb-3 text-pimenta-light-text text-lg">DATA</label>
                                                 <select
                                                     value={agendamentoForm.data}
-                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, data: e.target.value, horario: ''})}
+                                                    onChange={(e) => setAgendamentoForm({...agendamentoForm, data: e.target.value, barbeiro: '', horario: ''})} // Limpa barbeiro e horário ao mudar a data
                                                     className="w-full p-4 border-2 border-pimenta-detail bg-pimenta-principal text-pimenta-light-text rounded-xl focus:border-pimenta-accent outline-none text-lg"
                                                 >
                                                     <option value="" className="bg-pimenta-principal">Selecione uma data</option>
@@ -1343,6 +1334,54 @@
                                                 </select>
                                             </div>
 
+                                            {/* SELEÇÃO DE BARBEIRO COM LÓGICA DE INDISPONIBILIDADE */}
+                                            <div>
+                                                <label className="block font-bold mb-3 text-pimenta-light-text text-lg">BARBEIRO</label>
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                    {agendamentoForm.data ? (
+                                                        barbeiros.map(barbeiro => {
+                                                            const dayOfWeek = getDayOfWeek(agendamentoForm.data);
+                                                            const isUnavailable = BARBER_UNAVAILABILITY[barbeiro.nome].includes(dayOfWeek);
+                                                            
+                                                            // Limpa o barbeiro selecionado se ele ficou indisponível após a mudança de data
+                                                            if (isUnavailable && agendamentoForm.barbeiro === barbeiro.nome) {
+                                                                // Efeito colateral forçado para limpar o estado
+                                                                // Isso garante que o estado seja limpo *após* a renderização se necessário.
+                                                                setTimeout(() => setAgendamentoForm(prev => ({ ...prev, barbeiro: '', horario: '' })), 0);
+                                                            }
+
+                                                            return (
+                                                                <button
+                                                                    key={barbeiro.id}
+                                                                    type="button"
+                                                                    onClick={() => setAgendamentoForm({...agendamentoForm, barbeiro: barbeiro.nome, horario: ''})}
+                                                                    disabled={isUnavailable}
+                                                                    className={`p-4 rounded-xl font-bold text-lg transition transform ${isUnavailable ? 'cursor-not-allowed' : 'hover:scale-105'} ${
+                                                                        isUnavailable
+                                                                            ? 'bg-pimenta-principal/50 text-pimenta-light-text/50 border-2 border-pimenta-principal' // Estilo desabilitado
+                                                                            : agendamentoForm.barbeiro === barbeiro.nome
+                                                                                ? 'bg-pimenta-accent text-pimenta-light-text shadow-lg shadow-pimenta-accent/50 border-2 border-pimenta-detail'
+                                                                                : 'bg-pimenta-principal text-pimenta-detail hover:bg-pimenta-light-bg border-2 border-pimenta-detail'
+                                                                    }`}
+                                                                >
+                                                                    <div className="text-3xl mb-2 text-pimenta-secondary-accent">{barbeiro.icon}</div>
+                                                                    <div className="text-base">{barbeiro.nome}</div>
+                                                                    <div className={`text-xs mt-1 ${isUnavailable ? 'text-pimenta-accent font-bold' : 'text-pimenta-detail'}`}>
+                                                                        {isUnavailable ? '🚫 DIA DE FOLGA' : barbeiro.especialidade}
+                                                                    </div>
+                                                                </button>
+                                                            );
+                                                        })
+                                                    ) : (
+                                                        <div className="col-span-3 text-center p-4 bg-pimenta-principal/50 rounded-xl border border-pimenta-detail text-pimenta-detail font-bold">
+                                                            Selecione uma data primeiro para ver a disponibilidade dos barbeiros.
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {/* FIM SELEÇÃO DE BARBEIRO ATUALIZADA */}
+
+                                            {/* SELEÇÃO DE HORÁRIO */}
                                             {agendamentoForm.data && agendamentoForm.barbeiro && (
                                                 <div>
                                                     <label className="block font-bold mb-4 text-pimenta-light-text text-lg">
